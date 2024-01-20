@@ -1,6 +1,6 @@
 ﻿// LibWin.cpp : Определяет функции для статической библиотеки.
 //
-#include "pch.h" //test
+#include "pch.h"
 #include "LibWin.h"
 #include <objidl.h>
 
