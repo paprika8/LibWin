@@ -1,5 +1,6 @@
 #pragma once
 
+//
 #include "pch.h"
 
 #include <stdlib.h>
@@ -126,7 +127,7 @@ namespace stdminus {
 		}
 		int BinariItFind(T target)
 		{
-			if (target <= m[0])
+			if (!len || target <= m[0])
 				return 0;
 			if (target > m[len - 1])
 				return (len - 1 >= 0) ? (len) : (0);
@@ -152,7 +153,7 @@ namespace stdminus {
 		}
 		T* BinariFind(T target)
 		{
-			if (target < m[0])
+			if (!len || target < m[0])
 				return 0;
 			if (target > m[len - 1])
 				return 0;
