@@ -1,0 +1,79 @@
+	/*void Window::GLInit()
+	{
+		// Получение контекста WinAPI GDI
+		hDC = GetDC(hWnd);
+
+		// Настройка формата пикселей
+		PIXELFORMATDESCRIPTOR pfd;
+		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		pfd.nVersion = 1;
+		pfd.dwFlags = PFD_DRAW_TO_WINDOW
+			| PFD_SUPPORT_OPENGL // Поддержка OpenGL
+			| PFD_DOUBLEBUFFER; // Двойная буферизация (чтобы изображение не мерцало)
+		pfd.iPixelType = PFD_TYPE_RGBA; // Пиксели поддерживают прозрачность Alpha (поэтому, RGBA, а не RGB)
+		pfd.cColorBits = 16; // Глубина цвета - 16 бит
+		pfd.cDepthBits = 16;
+
+		int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+
+		PIXELFORMATDESCRIPTOR bestMatch_pfd;
+		DescribePixelFormat(hDC, iPixelFormat, sizeof(pfd), &bestMatch_pfd);
+
+		SetPixelFormat(hDC, iPixelFormat, &pfd);
+
+		// Создание контекста OpenGL
+		hRC = wglCreateContext(hDC);
+		wglMakeCurrent(hDC, hRC);
+
+		// Заливка фона черным:
+		// R     = 0/255   = 0.0
+		// G     = 0/255   = 0.0
+		// B     = 0/255   = 0.0
+		// Alpha = 255/255 = 1.0
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+	}
+
+	void Window::GLRenderScene()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glLoadIdentity();
+
+		// Поворачиваем сцену на угол Angle, по осям X (1.0), Y (1.0), но не Z (0.0)
+		glRotatef(0, 1.0, 1.0, 0.0);
+
+		// Цвет прямоугольника - темно-зеленый:
+		// R = 0/255   = 0
+		// G = 127/255 = 0.5
+		// B = 0/255   = 0
+		glColor3f(0.0, 0.5, 0.0);
+
+		// Рисование прямоугольника
+		// высота: 1 половина высоты окна =                      1.0 ед.
+		// ширина: 0.25 ширины окна = 0.5 половины ширины окна = 0.5 ед.
+		glBegin(GL_POLYGON);
+		glVertex2f(-1.0, -1.0); // Левый-нижний угол
+		glVertex2f(-1.0, 1.0); // Левый-верхний угол
+		glVertex2f(1.0, 1.0); // Правый-верхний угол
+		glVertex2f(1.0, -1.0); // Правый-нижний угол
+		glEnd();
+
+		SwapBuffers(hDC);
+	}
+
+	void Window::GLShutdown()
+	{
+		if (hRC != NULL)
+		{
+			wglMakeCurrent(NULL, NULL); // Делаем NULL текущим контекстом OpenGL (восстанавливаем умолчание)
+			wglDeleteContext(hRC); // Удаляем и обNULLяем наш контекст
+			hRC = NULL;
+		}
+
+		if (hDC != NULL)
+		{
+			ReleaseDC(hWnd, hDC); // Удаляем и обNULLяем наш контекст WinAPI GDI
+			hDC = NULL;
+		}
+	}*/
