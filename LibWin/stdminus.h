@@ -47,9 +47,9 @@ namespace stdminus {
 		}
 		int add(T b) {
 			int it = 0;
-			if(len){
+			if (len) {
 				it = BinariItFind(b);
-				if ((m + it)-> x == b)
+				if ((m + it)->x == b)
 					return it;
 			}
 			m = (mpair<T, U>*)realloc(m, len * sizeof(T) + sizeof(T));
@@ -239,7 +239,7 @@ namespace stdminus {
 		}
 		void rem(T h) {
 			int y = 0;
-			for(int i = 0; i < len; i++){
+			for (int i = 0; i < len; i++) {
 				if (m[i] == h)
 				{
 					y = i;
@@ -247,7 +247,7 @@ namespace stdminus {
 				}
 			}
 			return;
-			jm: memmove(m + y, m + y + 1, (len - y - 1) * sizeof(T));
+		jm: memmove(m + y, m + y + 1, (len - y - 1) * sizeof(T));
 			m = (T*)realloc(m, (--len) * sizeof(T));
 		}
 		T& operator[] (int i) {
@@ -268,6 +268,19 @@ namespace stdminus {
 				QuickSort(l, j);
 				QuickSort(i, r);
 			}
+		}
+		void clear() {
+			if (len)
+				delete m;
+			len = 0;
+			m = (T*)malloc(0);
+		}
+		void copy(arr<T>* orig) {
+			if (len > 0)
+				delete m;
+			len = orig->len;
+			m = (T*)malloc(len * sizeof(T));
+			memmove(m, orig->m, len * sizeof(T));
 		}
 	};
 #pragma endregion
@@ -308,4 +321,85 @@ namespace stdminus {
 		}
 	};
 #pragma endregion
+
+	struct string {
+		union {
+			arr<char> buffer;
+			struct {
+				char* str;
+				int len;
+			};
+		};
+		string() {
+			buffer = arr<char>();
+		}
+		/*string(char lit, char doobleLit = '\0') {
+			str = (char*)malloc(0);
+			len = 0;
+			buffer.add('\0');
+			int p;
+			char c;
+			for (p = scanf("%c", &c); p == 1 && c != lit && c != doobleLit; p = scanf("%c", &c)) {
+				str[len - 1] = c;
+				buffer.add('\0');
+			}
+		}*///парсинг с консоли, переделать на парсинг с потока (FILE*)
+
+		void operator= (string a) {
+			str = a.str;
+			len = a.len;
+		}
+		void operator= (const char* consta) {
+			buffer.clear();
+			for (; *consta; consta++)
+				buffer.add(*consta);
+			buffer.add('\0');
+		}
+		void operator= (char* consta) {
+			buffer.clear();
+			for (; *consta; consta++)
+				buffer.add(*consta);
+			buffer.add('\0');
+		}
+		bool operator== (string a) {
+			int i = -1;
+			if (len - a.len)
+				return 0;
+			do {
+				i++;
+				if (str[i] != a.str[i])
+					return 0;
+			} while (str[i]);
+			return 1;
+		}
+		bool operator< (string a) {
+			int i = -1;
+			do {
+				i++;
+			} while (str[i] && a.str[i] && str[i] == a.str[i]);
+			return str[i] < a.str[i];
+		}
+		bool operator<= (string a) {
+			int i = -1;
+			do {
+				i++;
+			} while (str[i] && a.str[i] && str[i] == a.str[i]);
+			return str[i] <= a.str[i];
+		}
+		bool operator> (string a) {
+			int i = -1;
+			do {
+				i++;
+			} while (str[i] && a.str[i] && str[i] == a.str[i]);
+			return str[i] > a.str[i];
+		}
+		bool operator>= (string a) {
+			int i = -1;
+			do {
+				i++;
+			} while (str[i] && a.str[i] && str[i] == a.str[i]);
+			return str[i] >= a.str[i];
+		}
+	};
+
 }
