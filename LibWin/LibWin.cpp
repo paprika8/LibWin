@@ -165,14 +165,6 @@ namespace Windows{
 		}
 		WData* wData = new WData();
 		wData->that = this;
-		{
-			auto buf = eve.has(WM_CREATE);
-			if (buf)
-				(*buf)(hWnd, WM_CREATE, 0, 0);
-			buf = eve.has(WM_NCCREATE);
-			if (buf)
-				(*buf)(hWnd, WM_NCCREATE, 0, 0);
-		}
 		SetWindowLongPtr(hWnd, 0, (LONG_PTR)wData);
 
 		ShowWindow(hWnd,
@@ -230,10 +222,10 @@ namespace Windows{
 		{
 		case WM_SIZE:
 		{
-			LPRECT rc = (LPRECT)malloc(sizeof(tagRECT));
-			GetWindowRect(hWnd, rc);
+			RECT rc;
+			GetWindowRect(hWnd, &rc);
 			if (childs.len != 0)
-				childs[0]->reRect({ 0, 0 }, { rc->right - rc->left, rc->bottom - rc->top });
+				childs[0]->reRect({ 0, 0 }, { rc.right - rc.left, rc.bottom - rc.top });
 		}
 		break;
 		case WM_PAINT:
@@ -251,9 +243,6 @@ namespace Windows{
 	Window::~Window() {
 		// TODO WORK!
 	}
-	HWND Window::getHWND() {
-		return hWnd;
-	}
 	stdminus::arr<Components::Component*> Window::getChildren() {
 		stdminus::arr<Components::Component*> elems;
 		auto g = [](HWND hwnd, LPARAM param) -> BOOL {
@@ -267,14 +256,14 @@ namespace Windows{
 		if (childs.len != 0)
 			remC(childs[0]);
 		comp->Configure(hWnd);
-		LPRECT rc = (LPRECT)malloc(sizeof(tagRECT));
-		GetWindowRect(hWnd, rc);
-		comp->reRect({ 0, 0 }, { rc->right - rc->left, rc->bottom - rc->top });
+		RECT rc;
+		GetWindowRect(hWnd, &rc);
+		comp->reRect({ 0, 0 }, { rc.right - rc.left, rc.bottom - rc.top });
 		childs.add(comp);
 	}
 	void Window::remC(Components::Component* comp) {
-		childs.rem(comp);
 		SendMessage(comp->GetHWND(), WM_DESTROY, 0, 0);
+		childs.rem(comp);
 	}
 #pragma endregion
 #pragma region RoundWin
@@ -304,14 +293,6 @@ namespace Windows{
 		}
 		WData* wData = new WData();
 		wData->that = this;
-		{
-			auto buf = eve.has(WM_CREATE);
-			if (buf)
-				(*buf)(hWnd, WM_CREATE, 0, 0);
-			buf = eve.has(WM_NCCREATE);
-			if (buf)
-				(*buf)(hWnd, WM_NCCREATE, 0, 0);
-		}
 		SetWindowLongPtr(hWnd, 0, (LONG_PTR)wData);
 
 		/*LONG lStyle = GetWindowLong(hWnd, GWL_STYLE);
@@ -409,13 +390,13 @@ namespace Windows{
 		break;
 		case WM_SIZE:
 		{
-			LPRECT rc = (LPRECT)malloc(sizeof(tagRECT));
-			GetWindowRect(hWnd, rc);
+			RECT rc;
+			GetWindowRect(hWnd, &rc);
 			if (childs.len != 0)
-				childs[0]->reRect({ 0, 0 }, { rc->right - rc->left, rc->bottom - rc->top });
+				childs[0]->reRect({ 0, 0 }, { rc.right - rc.left, rc.bottom - rc.top });
 
 			HRGN rgn;
-			rgn = CreateEllipticRgn(0, 0, rc->right - rc->left, rc->bottom - rc->top);
+			rgn = CreateEllipticRgn(0, 0, rc.right - rc.left, rc.bottom - rc.top);
 			SetWindowRgn(hWnd, rgn, TRUE);
 			
 		}
@@ -432,7 +413,6 @@ namespace Windows{
 			rc.left = 0;
 			rc.top = 0;
 			border.TouchRect(ps.rcPaint);
-			// TODO: Добавьте сюда любой код прорисовки, использующий HDC...
 			border.CPaint(hWnd, hdc, rc);
 			
 			EndPaint(hWnd, &ps);
@@ -444,9 +424,6 @@ namespace Windows{
 
 			RECT rcWindow;
 			GetWindowRect(hWnd, &rcWindow);
-
-			RECT rcFrame = { 0 };
-			AdjustWindowRectEx(&rcFrame, WS_OVERLAPPEDWINDOW & ~WS_CAPTION, FALSE, NULL);
 
 			POINT size = { rcWindow.right - rcWindow.left, rcWindow.bottom - rcWindow.top };
 			
@@ -517,9 +494,6 @@ namespace Windows{
 	RoundWin::~RoundWin() {
 		// TODO WORK!
 	}
-	HWND RoundWin::getHWND() {
-		return hWnd;
-	}
 	stdminus::arr<Components::Component*> RoundWin::getChildren() {
 		stdminus::arr<Components::Component*> elems;
 		auto g = [](HWND hwnd, LPARAM param) -> BOOL {
@@ -533,9 +507,9 @@ namespace Windows{
 		if (childs.len != 0)
 			remC(childs[0]);
 		comp->Configure(hWnd);
-		LPRECT rc = (LPRECT)malloc(sizeof(tagRECT));
-		GetWindowRect(hWnd, rc);
-		comp->reRect({ 0, 0 }, { rc->right - rc->left, rc->bottom - rc->top });
+		RECT rc;
+		GetWindowRect(hWnd, &rc);
+		comp->reRect({ 0, 0 }, { rc.right - rc.left, rc.bottom - rc.top });
 		childs.add(comp);
 	}
 	void RoundWin::remC(Components::Component* comp) {
@@ -561,12 +535,18 @@ namespace Windows{
 
 		SolidBrush br(Gdiplus::Color(255, 0, 0, 0));
 		SolidBrush brF(Gdiplus::Color(255, 20, 20, 20));
-
+	
 		Region* reg = new Region(hFrame);
 		gr.FillRegion(&brF, reg);
+		delete reg;
 
 		reg = new Region(hRgn);
 		gr.FillRegion(&br, reg);
+		delete reg;
+
+		DeleteObject(hFrame);
+		DeleteObject(hRgn);
+		DeleteObject(hHdrRgn);
 	}
 	void PRoundBorderWin::TouchRect(RECT& rcDrawing) {
 		rcDrawing.left = rcDrawing.left + h;
@@ -637,14 +617,6 @@ namespace Windows{
 		}
 		MData* mData = new MData();
 		mData->that = this;
-		{
-			auto buf = eve.has(WM_CREATE);
-			if (buf)
-				(*buf)(hWnd, WM_CREATE, 0, 0);
-			buf = eve.has(WM_NCCREATE);
-			if (buf)
-				(*buf)(hWnd, WM_NCCREATE, 0, 0);
-		}
 		SetWindowLongPtr(hWnd, 0, (LONG_PTR)mData);
 		return 0;
 	}
@@ -679,7 +651,7 @@ namespace Windows{
 					return (*buf)(hWnd, message, wParam, lParam);
 				delete mData->that;
 				free(mData);
-				mData = 0;
+				mData = NULL;
 			}
 			break;
 		default:

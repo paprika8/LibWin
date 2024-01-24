@@ -215,6 +215,11 @@ namespace Components{
 	}
 	void Component::Configure(HWND hWnd) {
 		CData* pData = (CData*)GetWindowLongPtr(hWnd, 0);
+		if (pData != NULL){
+			if (pData->that != NULL)
+				delete pData->that;
+			delete pData;
+		}
 		pData = (CData*)malloc(sizeof(CData));
 		if (pData == NULL)
 			return;
@@ -325,6 +330,8 @@ namespace Components{
 		Gdiplus::Graphics gr(hdc);
 		HRGN rgn = CreateRectRgn(rcDirty->left, rcDirty->top, rcDirty->right, rcDirty->bottom);
 		FillRgn(hdc, rgn, brush);
+		DeleteObject(brush);
+		DeleteObject(rgn);
 
 		// Initialize arguments.
 		Font font(hdc, hFont);
@@ -373,6 +380,8 @@ namespace Components{
 		SolidBrush br(Gdiplus::Color(255, 0, 0, 0));
 		Region *reg = new Region(hRgn);
 		gr.FillRegion(&br, reg);
+		DeleteObject(hRgn);
+		DeleteObject(hHdrRgn);
 	}
 	void PBorder::TouchRect(RECT& rcDrawing) {
 		rcDrawing.left = rcDrawing.left + margin.left;

@@ -83,7 +83,6 @@ namespace Windows {
 			_In_ int nCmdShow = SW_NORMAL
 		);
 		void add(Components::Component*);
-		HWND getHWND();
 		stdminus::arr<Components::Component*> getChildren();
 		void remC(Components::Component*);
 		LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -147,7 +146,6 @@ namespace Windows {
 			_In_ int nCmdShow = SW_NORMAL
 		);
 		void add(Components::Component*);
-		HWND getHWND();
 		stdminus::arr<Components::Component*> getChildren();
 		void remC(Components::Component*);
 		LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
