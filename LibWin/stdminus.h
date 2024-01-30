@@ -19,7 +19,7 @@ namespace stdminus {
 		T x;
 		U y;
 	};
-
+#pragma region WEvents
 	template<class T, class U>
 	struct WEvents {
 		mpair<T, arr<U>>* m;
@@ -56,7 +56,7 @@ namespace stdminus {
 					return it;
 			}
 			m = (mpair<T, arr<U>>*)realloc(m, len * sizeof(T) + sizeof(T));
-			if (len > 0)
+			if (len)
 				memmove(m + it + 1, m + it, (len - it) * sizeof(T));
 			(*(m + it)).x = b;
 			(*(m + it)).y = arr<U>();
@@ -70,7 +70,8 @@ namespace stdminus {
 			rem(it);
 		}
 		void rem(T* it) {
-			memmove(it, it + 1, ((m + len) - it) * sizeof(mpair<T, arr<U>>));
+			if (len > 1 && (m + len) - it)
+				memmove(it, it + 1, ((m + len) - it) * sizeof(mpair<T, arr<U>>));
 
 			m = (mpair<T, arr<U>>*)realloc(m, len * sizeof(mpair<T, arr<U>>) - sizeof(mpair<T, arr<U>>));
 
@@ -118,6 +119,7 @@ namespace stdminus {
 			return mid;
 		}
 	};
+#pragma endregion
 #pragma region map
 	template<class T, class U>
 	struct map {
@@ -155,7 +157,7 @@ namespace stdminus {
 					return it;
 			}
 			m = (mpair<T, U>*)realloc(m, len * sizeof(T) + sizeof(T));
-			if (len > 0)
+			if (len)
 				memmove(m + it + 1, m + it, (len - it) * sizeof(T));
 			(*(m + it)).x = b;
 			len++;
@@ -168,7 +170,8 @@ namespace stdminus {
 			rem(it);
 		}
 		void rem(T* it) {
-			memmove(it, it + 1, ((m + len) - it) * sizeof(mpair<T, U>));
+			if (len > 1 && (m + len) - it)
+				memmove(it, it + 1, ((m + len) - it) * sizeof(mpair<T, U>));
 
 			m = (mpair<T, U>*)realloc(m, len * sizeof(mpair<T, U>) - sizeof(mpair<T, U>));
 
@@ -276,8 +279,8 @@ namespace stdminus {
 				return;
 
 			m = (T*)realloc(m, len * sizeof(T) + sizeof(T));
-
-			memmove(m + it + 1, m + it, (len - it) * sizeof(T));
+			if(len)
+				memmove(m + it + 1, m + it, (len - it) * sizeof(T));
 
 			*(m + it) = b;
 
@@ -288,7 +291,8 @@ namespace stdminus {
 
 			m = (T*)realloc(m, len * sizeof(T) + sizeof(T));
 
-			memmove(m + it + 1, m + it, (len - it) * sizeof(T));
+			if (len)
+				memmove(m + it + 1, m + it, (len - it) * sizeof(T));
 
 			*(m + it) = b;
 
@@ -301,7 +305,9 @@ namespace stdminus {
 			remSet(it);
 		}
 		void remSet(T* it) {
-			memmove(it, it + 1, ((m + len) - it) * sizeof(T));
+
+			if (len > 1 && (m + len) - it)
+				memmove(it, it + 1, ((m + len) - it) * sizeof(T));
 
 			m = (T*)realloc(m, len * sizeof(T) - sizeof(T));
 
@@ -323,19 +329,22 @@ namespace stdminus {
 		}
 		arr(arr<T>* a) {
 			m = (T*)malloc(a->len * sizeof(T));
-			memmove(m, a->m, a->len * sizeof(T));
+			if (a->len)
+				memmove(m, a->m, a->len * sizeof(T));
 			len = a->len;
 		}
 		void add(T b) {
 			m = (T*)realloc(m, len * sizeof(T) + sizeof(T));
 
-			memmove(m + len, &b, sizeof(T));
+			if(len)
+				memmove(m + len, &b, sizeof(T));
 
 			len++;
 		}
 		void rem() {
 			T* h = (T*)malloc(len * sizeof(T) - sizeof(T));
-			memmove(h, m, (len - 1) * sizeof(T));
+			if (len > 1)
+				memmove(h, m, (len - 1) * sizeof(T));
 			free(m);
 			m = h;
 		}
@@ -349,7 +358,8 @@ namespace stdminus {
 				}
 			}
 			return;
-		jm: memmove(m + y, m + y + 1, (len - y - 1) * sizeof(T));
+		jm: if ((len - y - 1))
+				memmove(m + y, m + y + 1, (len - y - 1) * sizeof(T));
 			m = (T*)realloc(m, (--len) * sizeof(T));
 		}
 		T& operator[] (int i) {
@@ -382,7 +392,8 @@ namespace stdminus {
 				delete m;
 			len = orig->len;
 			m = (T*)malloc(len * sizeof(T));
-			memmove(m, orig->m, len * sizeof(T));
+			if(len)
+				memmove(m, orig->m, len * sizeof(T));
 		}
 	};
 #pragma endregion
@@ -394,7 +405,8 @@ namespace stdminus {
 		int len;
 		starr(starr<T>* a) {
 			m = (T*)malloc(a->len * sizeof(T));
-			memmove(m, a->m, a->len * sizeof(T));
+			if(a->len)
+				memmove(m, a->m, a->len * sizeof(T));
 			len = a->len;
 		}
 		starr(int i)
