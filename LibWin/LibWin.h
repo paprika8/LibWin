@@ -44,12 +44,78 @@ namespace Windows {
 			_In_ int nCmdShow = SW_NORMAL
 		) = 0;
 		int run();
-		void setBackground(HBRUSH bruch) {
-			SetClassLongPtr(hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)bruch);
+		ATOM getAtom() {
+			return (ATOM)GetClassLongPtr(hWnd, GCL_CBWNDEXTRA);
+		}
+		void setExtra(int value) {
+			SetClassLongPtr(hWnd, GCL_CBCLSEXTRA, (LONG_PTR)value);
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
-		HBRUSH getBackground(HBRUSH bruch) {
+		int getExtra() {
+			return (int)GetClassLongPtr(hWnd, GCL_CBCLSEXTRA);
+		}
+		void setExtraWindow(int value) {
+			SetClassLongPtr(hWnd, GCL_CBWNDEXTRA, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		int getExtraWindow() {
+			return (int)GetClassLongPtr(hWnd, GCL_CBWNDEXTRA);
+		}
+		void setBackground(HBRUSH value) {
+			SetClassLongPtr(hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		HBRUSH getBackground() {
 			return (HBRUSH)GetClassLongPtr(hWnd, GCLP_HBRBACKGROUND);
+		}
+		void setCursor(HCURSOR value) {
+			SetClassLongPtr(hWnd, GCLP_HCURSOR, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		HCURSOR getCursor() {
+			return (HCURSOR)GetClassLongPtr(hWnd, GCLP_HCURSOR);
+		}
+		void setIcon(HICON value) {
+			SetClassLongPtr(hWnd, GCLP_HICON, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		HICON getIcon() {
+			return (HICON)GetClassLongPtr(hWnd, GCLP_HICON);
+		}
+		void setSmallIcon(HICON value) {
+			SetClassLongPtr(hWnd, GCLP_HICONSM, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		HICON getSmallIcon() {
+			return (HICON)GetClassLongPtr(hWnd, GCLP_HICONSM);
+		}
+		void setModule(HMODULE value) {
+			SetClassLongPtr(hWnd, GCLP_HMODULE, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		HMODULE getModule() {
+			return (HMODULE)GetClassLongPtr(hWnd, GCLP_HMODULE);
+		}
+		void setMenuName(LPCWSTR value) {
+			SetClassLongPtr(hWnd, GCLP_MENUNAME, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		LPCWSTR getMenuName() {
+			return (LPCWSTR)GetClassLongPtr(hWnd, GCLP_MENUNAME);
+		}
+		void setStyle(UINT value) {
+			SetClassLongPtr(hWnd, GCL_STYLE, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		UINT getStyle() {
+			return (UINT)GetClassLongPtr(hWnd, GCL_STYLE);
+		}
+		void setWindowProcess(WNDPROC value) {
+			SetClassLongPtr(hWnd, GCLP_WNDPROC, (LONG_PTR)value);
+			InvalidateRect(hWnd, NULL, FALSE);
+		}
+		WNDPROC getWindowProcess() {
+			return (WNDPROC)GetClassLongPtr(hWnd, GCLP_WNDPROC);
 		}
 		virtual HWND getHWND() {
 			return hWnd;

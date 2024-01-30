@@ -653,7 +653,7 @@ namespace Windows{
 		components.rem(comp);
 	}
 	LRESULT CALLBACK CastomMenu::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
+		return 0;
 	}
 	LRESULT CALLBACK CastomMenu::SWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		MData* mData = (MData*)GetWindowLongPtr(hWnd, 0);
