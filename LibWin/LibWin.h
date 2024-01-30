@@ -46,18 +46,16 @@ namespace Windows {
 		) = 0;
 		int run();
 		ATOM getAtom() {
-			return (ATOM)GetClassLongPtr(hWnd, GCL_CBWNDEXTRA);
+			return (ATOM)GetClassLongPtr(hWnd, GCW_ATOM);
 		}
 		void setExtra(int value) {
 			SetClassLongPtr(hWnd, GCL_CBCLSEXTRA, (LONG_PTR)value);
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		int getExtra() {
 			return (int)GetClassLongPtr(hWnd, GCL_CBCLSEXTRA);
 		}
 		void setExtraWindow(int value) {
 			SetClassLongPtr(hWnd, GCL_CBWNDEXTRA, (LONG_PTR)value);
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		int getExtraWindow() {
 			return (int)GetClassLongPtr(hWnd, GCL_CBWNDEXTRA);
@@ -92,7 +90,6 @@ namespace Windows {
 		}
 		void setModule(HMODULE value) {
 			SetClassLongPtr(hWnd, GCLP_HMODULE, (LONG_PTR)value);
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		HMODULE getModule() {
 			return (HMODULE)GetClassLongPtr(hWnd, GCLP_HMODULE);
@@ -113,7 +110,6 @@ namespace Windows {
 		}
 		void setWindowProcess(WNDPROC value) {
 			SetClassLongPtr(hWnd, GCLP_WNDPROC, (LONG_PTR)value);
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 		WNDPROC getWindowProcess() {
 			return (WNDPROC)GetClassLongPtr(hWnd, GCLP_WNDPROC);
