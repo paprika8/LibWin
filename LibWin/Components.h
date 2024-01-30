@@ -229,19 +229,8 @@ namespace Components {
 	class Button : public Component {
 	public:
 		Button();
-		Button(HFONT font);
-		Button(wchar_t* st);
-		Button(HFONT font, wchar_t* st);
 		~Button();
-		static void Register();
-		static void Unregister();
 		void Configure(HWND hWnd) override;
-		wchar_t* str;
-		void SetFont(HFONT font);
-		HFONT GetFont();
-		StringFormat stForm;
-	private:
-		HFONT hFont;
 
 	protected:
 		void CPaint(HWND hwnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData) override;

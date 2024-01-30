@@ -359,63 +359,14 @@ namespace Components{
 #pragma endregion
 #pragma region Button
 	Button::Button() : Component() {
-
-		hFont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0,
-			DEFAULT_CHARSET,
-			0, 0, 0, 0,
-			L"Arial Bold"
-		);
-		str = (wchar_t*)L"";
-	}
-	Button::Button(HFONT font) : Component() {
-		hFont = font;
-		str = (wchar_t*)L"";
-	}
-	Button::Button(wchar_t* st) : Component() {
-		hFont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0,
-			DEFAULT_CHARSET,
-			0, 0, 0, 0,
-			L"Arial Bold"
-		);
-		str = st;
-	}
-	Button::Button(HFONT font, wchar_t* st) : Component() {
-		str = st;
-		hFont = font;
 	}
 	Button::~Button() {
 
 	}
-	void Button::Register()
-	{
-		WNDCLASS wc = { 0 };
-
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = SCProc;
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.lpszClassName = L"WText";
-		wc.cbWndExtra = sizeof(LONG_PTR*);
-		RegisterClass(&wc);
-	}
-	void Button::Unregister()
-	{
-		UnregisterClass(L"WText", NULL);
-	}
 	void Button::Configure(HWND hWnd) {
-		HWND hThis = CreateWindow(L"WText", NULL, WS_CHILD | WS_VISIBLE,
-			10, 10, 100, 100, hWnd, 0, GetModuleHandle(NULL), NULL);
+		HWND hThis = CreateWindow(L"Button", NULL, WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+			10, 10, 100, 100, hWnd, NULL, GetModuleHandle(NULL), NULL);
 		Component::Configure(hThis);
-	}
-	int getStringWidth(wchar_t* text, HFONT font) {
-		HDC dc = GetDC(NULL);
-		SelectObject(dc, font);
-
-		RECT rect = { 0, 0, 0, 0 };
-		DrawText(dc, text, strlen((char*)text), &rect, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE);
-		int textWidth = abs(rect.right - rect.left);
-
-		DeleteDC(dc);
-		return textWidth;
 	}
 	void Button::CPaint(HWND hWnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData) {
 
@@ -427,25 +378,9 @@ namespace Components{
 		DeleteObject(brush);
 		DeleteObject(rgn);
 
-		// Initialize arguments.
-		Font font(hdc, hFont);
-		RectF rectf(rcDirty->left, rcDirty->top, rcDirty->right - rcDirty->left, rcDirty->bottom - rcDirty->top);
-		SolidBrush br(Gdiplus::Color(125, 0, 0, 0));
-
-		// Draw string.
-		gr.DrawString(str, lstrlenW(str), &font, rectf, &stForm, &br);
-
-		//DrawText(hdc, st, lstrlenW(st), rcDirty, 0);
-
 		SwapBuffers(hdc);
 
 		UpdateWindow(hWnd);
-	}
-	void Button::SetFont(HFONT font) {
-		hFont = font;
-	}
-	HFONT Button::GetFont() {
-		return hFont;
 	}
 #pragma endregion
 #pragma region PseudoComponent
