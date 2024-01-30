@@ -6,6 +6,7 @@
 #include <tchar.h>
 #include <math.h>
 #include <objidl.h>
+#include <functional>
 
 #pragma comment (lib,"Gdiplus.lib")
 #include <gdiplus.h>
@@ -173,7 +174,7 @@ namespace Components {
 	class Component
 	{
 	public:
-		stdminus::map<int, LRESULT(*)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> eve;
+		stdminus::WEvents<int, std::function<LRESULT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>> eve;
 		stdminus::arr<PseudoComponent*> psComp;
 		Component();
 		~Component();
@@ -190,7 +191,7 @@ namespace Components {
 		void reRect(CPoint p, CSize s, char type);
 		stdminus::arr<Components::Component*> GetChildren();
 	private:
-		HWND hwnd = 0;
+		HWND hWnd = 0;
 		char typeResize = 0;
 		IMargin* margin = new CMargin( 0, 0, 0, 0 );
 		CPoint pPoint = { 0, 0 };
