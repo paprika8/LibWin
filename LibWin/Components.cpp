@@ -53,11 +53,11 @@ namespace Components{
 		// Alpha = 255/255 = 1.0
 		//glClearColor(0.0, 0.0, 0.0, 1.0);
 	}*/
-	void Component::CPaint(HWND hwnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData)
+	void Component::CPaint(HWND hWnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData)
 	{
 
 	}
-	void Component::CDPaintBuffer(HWND hwnd, PAINTSTRUCT* pPaintStruct)
+	void Component::CDPaintBuffer(HWND hWnd, PAINTSTRUCT* pPaintStruct)
 	{
 		int cx = pPaintStruct->rcPaint.right - pPaintStruct->rcPaint.left;
 		int cy = pPaintStruct->rcPaint.bottom - pPaintStruct->rcPaint.top;
@@ -66,7 +66,7 @@ namespace Components{
 		HBITMAP hOldBmp;
 		POINT ptOldOrigin;
 
-		CData* pData = (CData*)GetWindowLongPtr(hwnd, 0);
+		CData* pData = (CData*)GetWindowLongPtr(hWnd, 0);
 		Component* that = pData->that;
 
 		// Create new bitmap-back device context, large as the dirty rectangle.
@@ -83,10 +83,10 @@ namespace Components{
 			for(;i < that->psComp.len; i++)
 				that->psComp[i]->ChainTouchRect(pPaintStruct->rcPaint);
 
-			that->CPaint(hwnd, hMemDC, &pPaintStruct->rcPaint, TRUE, pData);
+			that->CPaint(hWnd, hMemDC, &pPaintStruct->rcPaint, TRUE, pData);
 
 			while(i--)
-				that->psComp[i]->ChainCPaint(hwnd, hMemDC, rcPs);
+				that->psComp[i]->ChainCPaint(hWnd, hMemDC, rcPs);
 		}
 		SetViewportOrgEx(hMemDC, ptOldOrigin.x, ptOldOrigin.y, NULL);
 
@@ -101,10 +101,10 @@ namespace Components{
 		DeleteDC(hMemDC);
 	}
 
-	LRESULT CALLBACK Component::SCProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK Component::SCProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 
-		CData* pData = (CData*)GetWindowLongPtr(hwnd, 0);
+		CData* pData = (CData*)GetWindowLongPtr(hWnd, 0);
 		switch (uMsg) {
 			case WM_NCCREATE:
 			{
@@ -112,17 +112,18 @@ namespace Components{
 				if (pData == NULL)
 					return FALSE;
 				pData->that = 0;
-				SetWindowLongPtr(hwnd, 0, (LONG_PTR)pData);
+				SetWindowLongPtr(hWnd, 0, (LONG_PTR)pData);
 			}
 			return TRUE;
 			case WM_DESTROY:
 			case WM_NCDESTROY:
 				if (pData != NULL) {
-					SetWindowLongPtr(hwnd, 0, 0);
+					SetWindowLongPtr(hWnd, 0, 0);
 					{
 						auto buf = pData->that->eve.has(uMsg);
 						if (buf)
-							return (*buf)(hwnd, uMsg, wParam, lParam);
+							for (auto i = buf->m; i != buf->m + buf->len; i++)
+								(*i)(hWnd, uMsg, wParam, lParam);
 					}
 					delete pData->that;
 					free(pData);
@@ -134,25 +135,24 @@ namespace Components{
 					if (pData->that){
 						{
 							auto buf = pData->that->eve.has(uMsg);
-							if (buf) {
-								LRESULT res = (*buf)(hwnd, uMsg, wParam, lParam);
-								if (!res)
-									return res;
-							}
+							if (buf)
+								for (auto i = buf->m; i != buf->m + buf->len; i++)
+									if (LRESULT res = (*i)(hWnd, uMsg, wParam, lParam))
+										return res;
 						}
-						return pData->that->CProc(hwnd, uMsg, wParam, lParam);
+						return pData->that->CProc(hWnd, uMsg, wParam, lParam);
 					}
 		}
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-	LRESULT CALLBACK Component::CProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK Component::CProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{	
-		CData* pData = (CData*)GetWindowLongPtr(hwnd, 0);
+		CData* pData = (CData*)GetWindowLongPtr(hWnd, 0);
 		switch (uMsg) {
 			case WM_PAINT:
 			{
 				PAINTSTRUCT paintStruct;
-				HDC hDC = BeginPaint(hwnd, &paintStruct);
+				HDC hDC = BeginPaint(hWnd, &paintStruct);
 				/*SetTextColor(hDC, NULL);
 				HFONT hFont = CreateFont(90, 0, 0, 0, 0, 0, 0, 0,
 					DEFAULT_CHARSET,
@@ -161,15 +161,15 @@ namespace Components{
 				);
 				
 				SelectObject(hDC, hFont);*/
-				CDPaintBuffer(hwnd, &paintStruct);
+				CDPaintBuffer(hWnd, &paintStruct);
 				
 				//DeleteObject(hFont);
-				EndPaint(hwnd, &paintStruct);
+				EndPaint(hWnd, &paintStruct);
 			}
 			break;
 		}
 		
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
 	CSize Component::GetSize() {
@@ -179,7 +179,7 @@ namespace Components{
 		return margin;
 	}
 	HWND Component::GetHWND() {
-		return hwnd;
+		return hWnd;
 	}
 	void Component::SetSize(CSize sz) {
 		size = sz;
@@ -201,16 +201,16 @@ namespace Components{
 		pPoint = p;
 		pSize = s;
 		margin->reRect(p, s, size, GetContentSize(), type);
-		MoveWindow(hwnd,
+		MoveWindow(hWnd,
 			p.x, p.y, s.width, s.hight, 1);
 	}
 	stdminus::arr<Component*> Component::GetChildren() {
 		stdminus::arr<Component*> elems = stdminus::arr<Component*>();
-		auto g = [](HWND hwnd, LPARAM param) -> BOOL {
-			((stdminus::arr<Component*>*)param)->add(((CData*)GetWindowLongPtr(hwnd, 0))->that);
+		auto g = [](HWND hWnd, LPARAM param) -> BOOL {
+			((stdminus::arr<Component*>*)param)->add(((CData*)GetWindowLongPtr(hWnd, 0))->that);
 			return true;
 			};
-		EnumChildWindows(hwnd, g, (LPARAM)&elems);
+		EnumChildWindows(hWnd, g, (LPARAM)&elems);
 		return elems;
 	}
 	void Component::Configure(HWND hWnd) {
@@ -228,20 +228,23 @@ namespace Components{
 		{
 			auto buf = eve.has(WM_CREATE);
 			if (buf)
-				(*buf)(hWnd, WM_CREATE, 0, 0);
+				for (auto i = buf->m; i != buf->m + buf->len; i++)
+					(*i)(hWnd, WM_CREATE, 0, 0);
 			buf = eve.has(WM_NCCREATE);
 			if (buf)
-				(*buf)(hWnd, WM_NCCREATE, 0, 0);
+				for (auto i = buf->m; i != buf->m + buf->len; i++)
+					(*i)(hWnd, WM_NCCREATE, 0, 0);
 		}
-		hwnd = hWnd;
+		hWnd = hWnd;
 		reRect(pPoint, pSize);
 	}
 	Component::Component()
 	{
 	}
-
 	Component::~Component()
 	{
+		if(hWnd)
+			SendMessage(hWnd, WM_DESTROY, 0, 0);
 	}
 	void Component::Register()
 	{
@@ -323,7 +326,7 @@ namespace Components{
 		DeleteDC(dc);
 		return textWidth;
 	}
-	void Text::CPaint(HWND hwnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData) {
+	void Text::CPaint(HWND hWnd, HDC hdc, RECT* rcDirty, BOOL bErase, CData* pData) {
 		
 		SetBkMode(hdc, TRANSPARENT);
 		HBRUSH brush = CreateSolidBrush((COLORREF)0x000FF000);
@@ -345,7 +348,7 @@ namespace Components{
 
 		SwapBuffers(hdc);
 		
-		UpdateWindow(hwnd);
+		UpdateWindow(hWnd);
 	}
 	void Text::SetFont(HFONT font) {
 		hFont = font;
@@ -355,12 +358,12 @@ namespace Components{
 	}
 #pragma endregion
 #pragma region PseudoComponent
-	void PseudoComponent::ChainCPaint(HWND hwnd, HDC hdc, RECT &rcDirty) {
-		CPaint(hwnd, hdc, rcDirty);
+	void PseudoComponent::ChainCPaint(HWND hWnd, HDC hdc, RECT &rcDirty) {
+		CPaint(hWnd, hdc, rcDirty);
 		if (!next)
 			return;
 		TouchRect(rcDirty);
-		next->ChainCPaint(hwnd, hdc, rcDirty);
+		next->ChainCPaint(hWnd, hdc, rcDirty);
 	}
 	void PseudoComponent::ChainTouchRect(RECT& rcDrawing) {
 		TouchRect(rcDrawing);
@@ -371,7 +374,7 @@ namespace Components{
 	PBorder::PBorder(CMargin mar) {
 		margin = mar;
 	}
-	void PBorder::CPaint(HWND hwnd, HDC hdc, RECT& rcDirty) {
+	void PBorder::CPaint(HWND hWnd, HDC hdc, RECT& rcDirty) {
 		HRGN hRgn = CreateRectRgn(rcDirty.left, rcDirty.top, rcDirty.right, rcDirty.bottom);
 
 		HRGN hHdrRgn = CreateRectRgn(rcDirty.left + margin.left, rcDirty.top + margin.top, rcDirty.right - margin.right, rcDirty.bottom - margin.bottom);

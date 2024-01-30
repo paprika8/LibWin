@@ -24,7 +24,8 @@ namespace Windows {
 	int InitLib(HINSTANCE hInstance);
 	class baseWindow {
 	public:
-		stdminus::map<int, LRESULT(*)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> eve;
+		//stdminus::map<int, LRESULT(*)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> eve;
+		stdminus::WEvents<int, std::function<LRESULT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>> eve;
 		virtual void add(Components::Component*) = 0;
 		int init(_In_ int nCmdShow = SW_NORMAL);
 		int init(int width, int hight, _In_ int nCmdShow = SW_NORMAL);
@@ -105,7 +106,8 @@ namespace Windows {
 	class CastomMenu {
 		friend int Windows::InitLib(HINSTANCE hInstance);
 	public:
-		stdminus::map<int, LRESULT(*)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> eve;
+		//stdminus::map<int, LRESULT(*)(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> eve;
+		stdminus::WEvents<int, std::function<LRESULT(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>> eve;
 		Components::CRoundMargin margin = { 0, 0 };
 		CastomMenu(HWND parent);
 		CastomMenu(HWND parent, Components::CRoundMargin mar);

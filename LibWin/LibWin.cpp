@@ -93,10 +93,10 @@ namespace Windows{
 		}
 		return (int)msg.wParam;
 	}
-	LRESULT CALLBACK baseWindow::SWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK baseWindow::SWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		WData* wData = (WData*)GetWindowLongPtr(hWnd, 0);
-		switch (message) {
+		switch (uMsg) {
 		case WM_NCCREATE:
 		{
 			wData = (WData*)malloc(sizeof(WData));
@@ -111,9 +111,10 @@ namespace Windows{
 			SetWindowLongPtr(hWnd, 0, 0);
 			if(wData != NULL)
 			{
-				auto buf = wData->that->eve.has(message);
+				auto buf = wData->that->eve.has(uMsg);
 				if (buf)
-					return (*buf)(hWnd, message, wParam, lParam);
+					for (auto i = buf->m; i != buf->m + buf->len; i++)
+						(*i)(hWnd, uMsg, wParam, lParam);
 				delete wData->that;
 				free(wData);
 				wData = 0;
@@ -123,19 +124,18 @@ namespace Windows{
 			if (wData)
 				if (wData->that) {
 					{
-						auto buf = wData->that->eve.has(message);
-						if (buf) {
-							LRESULT res = (*buf)(hWnd, message, wParam, lParam);
-							if (!res)
-								return res;
-						}
+						auto buf = wData->that->eve.has(uMsg);
+						if (buf)
+							for (auto i = buf->m; i != buf->m + buf->len; i++)
+								if (LRESULT res = (*i)(hWnd, uMsg, wParam, lParam))
+									return res;
 					}
-					return wData->that->wndProc(hWnd, message, wParam, lParam);
+					return wData->that->wndProc(hWnd, uMsg, wParam, lParam);
 				}
 			break;
 		}
 
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 #pragma endregion
 #pragma region Window
@@ -241,6 +241,8 @@ namespace Windows{
 		return 0;
 	}
 	Window::~Window() {
+		if (hWnd)
+			SendMessage(hWnd, WM_DESTROY, 0, 0);
 		// TODO WORK!
 	}
 	stdminus::arr<Components::Component*> Window::getChildren() {
@@ -257,9 +259,10 @@ namespace Windows{
 			remC(childs[0]);
 		comp->Configure(hWnd);
 		RECT rc;
-		GetWindowRect(hWnd, &rc);
+		GetWindowRect(hWnd, &rc);	
 		comp->reRect({ 0, 0 }, { rc.right - rc.left, rc.bottom - rc.top });
 		childs.add(comp);
+		comp->eve[WM_NCDESTROY].add([=](HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)-> LRESULT { remC(comp); return 0; });
 	}
 	void Window::remC(Components::Component* comp) {
 		SendMessage(comp->GetHWND(), WM_DESTROY, 0, 0);
@@ -648,7 +651,8 @@ namespace Windows{
 			{
 				auto buf = mData->that->eve.has(message);
 				if (buf)
-					return (*buf)(hWnd, message, wParam, lParam);
+					for(auto i = buf->m; i != buf->m + buf->len; i++)
+						(*i)(hWnd, message, wParam, lParam);
 				delete mData->that;
 				free(mData);
 				mData = NULL;
@@ -659,11 +663,10 @@ namespace Windows{
 				if (mData->that) {
 					{
 						auto buf = mData->that->eve.has(message);
-						if (buf) {
-							LRESULT res = (*buf)(hWnd, message, wParam, lParam);
-							if (!res)
-								return res;
-						}
+						if (buf)
+							for (auto i = buf->m; i != buf->m + buf->len; i++)
+								if (LRESULT res = (*i)(hWnd, message, wParam, lParam))
+									return res;
 					}
 					return mData->that->wndProc(hWnd, message, wParam, lParam);
 				}
