@@ -327,10 +327,9 @@ namespace Components {
 		friend ProcessView;
 	public:
 		stdminus::WEvents<LRESULT , HWND , UINT , WPARAM , LPARAM> eve;
-
-		virtual void configure ( HWND hWnd , ProcBuilder* ) = 0;
-		void configure ( HWND hWnd ) {
-			this->configure ( hWnd , defaultBuild );
+		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* ) = 0;
+		ProcessView* configure ( HWND hWnd ) {
+			return this->configure ( hWnd , defaultBuild );
 		}
 
 		virtual TCHAR* getSzWindowClass () = 0;
@@ -578,7 +577,10 @@ namespace Components {
 	class SizeProcBuilder : public ProcBuilder
 	{
 	public:
-		CSize size;
+		SizeProcBuilder ( CSize asize ) {
+			size = asize;
+		}
+		CSize size = CSize(0, 0);
 
 		// Унаследовано через ProcBuilder
 		void build ( ProcessView* ) override;
@@ -624,7 +626,7 @@ namespace Components {
 		virtual void show ( int nCmdShow = SW_NORMAL ) override {
 			( ( RectPWindow* ) wnds->get ( 0 ) )->show ( nCmdShow );
 		}
-		virtual void configure ( HWND hWnd , ProcBuilder* ) override;
+		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
 		void setContent ( View* view ) override;
 
 		~RectWindow ();

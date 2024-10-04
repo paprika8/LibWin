@@ -2,6 +2,7 @@
 
 namespace Components {
 	ULONG_PTR gdiplusToken = 0;
+	void moveWnd ( ProcessView* process , ProcessView* child );
 	void View::VDPaintBuffer ( HWND hwnd , PAINTSTRUCT* pPaintStruct )
 	{
 		int cx = pPaintStruct->rcPaint.right - pPaintStruct->rcPaint.left;
@@ -51,6 +52,14 @@ namespace Components {
 			SetWindowLongPtr ( hwnd , 0 , ( LONG_PTR ) pData );
 		}
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+		case WM_SIZE:
+		{
+			View *view = pData->that->getModel ();
+			if (Component* comp = dynamic_cast < Component* >( view ) ) {
+				moveWnd ( pData->that , comp->getContent ()->wnds->get ( 0 ) );
+			}
+		}
+		return 0;
 		case WM_DESTROY:
 		case WM_NCDESTROY:
 			if ( pData != NULL ) {
@@ -107,6 +116,7 @@ namespace Components {
 	int RectPWindow::init ( _In_ DWORD dwExStyle , _In_ DWORD dwStyle , _In_ int X , _In_ int Y , _In_ int nWidth , _In_ int nHeight ,
 		_In_opt_ HWND hWndParent , _In_opt_ HMENU hMenu , _In_opt_ HINSTANCE hInstance , _In_opt_ LPVOID lpParam )
 	{
+		size = CSize ( nWidth , nHeight );
 		hWnd = CreateWindowEx (
 			dwExStyle ,
 			model->getSzWindowClass () ,
@@ -187,12 +197,13 @@ namespace Components {
 		configure ( 0 , 0 );
 	}
 
-	void RectWindow::configure ( HWND hWnd , ProcBuilder* )
+	ProcessView* RectWindow::configure ( HWND hWnd , ProcBuilder* )
 	{
 		RectPWindow* win = new RectPWindow ( this );
 		wnds->add ( win );
 		if ( content )
 			content->configure ( win->getHWND () );
+		return win;
 	}
 
 	RectWindow::~RectWindow ()
@@ -244,15 +255,25 @@ namespace Components {
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 	}
 
+	void moveWnd (ProcessView*process, ProcessView*child) {
+		CPoint cord = ( 0 , 0 );
+		CSize size = CSize (process->size );
+		child->getMargin ()->reRect ( cord , size , child->size , MarginType::CONTENT );
+		MoveWindow ( child->getHWND () , cord.x , cord.y , size.width , size.height , true );
+	}
+
 	void RectWindow::setContent ( View* view )
 	{
 		if ( content )
 			delete content;
 		content = view;
 		view->parent = this;
-		ProcessView* process = 0;
-		if ( process = wnds->get ( 0 ) )
-			content->configure ( process->getHWND () );
+		ProcessView* child, *process  = 0;
+		if (process = wnds->get(0)) {
+			child = content->configure(process->getHWND());
+			moveWnd(process, child);
+		}
+
 	}
 
 	void SingleWnd::add ( ProcessView* proc )
@@ -288,4 +309,5 @@ namespace Components {
 	{
 		process->size = size;
 	}
+	
 }

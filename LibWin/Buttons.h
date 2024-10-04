@@ -16,6 +16,10 @@ namespace Components {
 		CMargin* getMargin () override;
 		CPadding* getPadding () override;
 		CSize GetContentSize () override;
+	protected:
+		CMargin margin = CMargin ( 0 , 0 , 0 , 0 );
+
+
 	};
 
 	class Button : virtual public View {
@@ -32,14 +36,14 @@ namespace Components {
 		TextPaintForm *textFormat = new TextPaintForm();
 		//TODO оптимизированный класс wstring в stdminus.h, измен€емые строки
 		// ”наследовано через Content
-		void configure ( HWND hWnd , ProcBuilder* ) override;
+		ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
 		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
 	};
 	class ButtonWrap : public Component , public Button {
 		// ”наследовано через Component
 		void childDeleted ( Safety* ) override;
-		void configure ( HWND hWnd , ProcBuilder* ) override;
+		ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
 		void Unregister () override;
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
 		void setContent ( View* view ) override;

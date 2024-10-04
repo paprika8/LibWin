@@ -36,6 +36,9 @@ namespace Components {
 	}
 	ProcessButton::ProcessButton ( View* aModel , HWND hwnd , const char* _id = "" ) : ProcessView ( aModel , hwnd , _id )
 	{
+		
+
+
 		hWnd = CreateWindowEx (
 			0 ,
 			model->getSzWindowClass () ,
@@ -59,11 +62,12 @@ namespace Components {
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 	}
-	void Components::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
+	ProcessView* Components::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
 	{
 		ProcessButton* process = new ProcessButton ( this , hwnd );
 		if( builder )
 			builder->build ( process );
+		return process;
 	}
 
 	TCHAR* Components::Button::getSzWindowClass ()
@@ -141,8 +145,9 @@ namespace Components {
 	{
 	}
 
-	void Components::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
+	ProcessView* Components::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
 	{
+		return 0;
 	}
 
 	void Components::ButtonWrap::Unregister ()
@@ -159,7 +164,7 @@ namespace Components {
 
 	CMargin* Components::ProcessButton::getMargin ()
 	{
-		return nullptr;
+		return &margin;
 	}
 
 	CPadding* Components::ProcessButton::getPadding ()
