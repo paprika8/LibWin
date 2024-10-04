@@ -54,8 +54,12 @@ namespace Components {
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		case WM_SIZE:
 		{
+			if(!pData->that )
+				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+			pData->that->size = lParam;
 			View *view = pData->that->getModel ();
-			if (Component* comp = dynamic_cast < Component* >( view ) ) {
+			Component* comp = dynamic_cast < Component* >( view );
+			if ( comp && comp->getContent () && comp->getContent ()->wnds) {
 				moveWnd ( pData->that , comp->getContent ()->wnds->get ( 0 ) );
 			}
 		}

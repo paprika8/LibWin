@@ -265,8 +265,10 @@ namespace Components {
 					break;
 				}
 			}
-			point = { x, y };
-			drawSize = { w, h };
+			point.x = x;
+			point.y = y;
+			drawSize.width = w;
+			drawSize.height = h;
 		}
 		virtual void reSize ( CSize& size )
 		{

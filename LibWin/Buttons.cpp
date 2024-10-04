@@ -62,9 +62,13 @@ namespace Components {
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 	}
+	Components::ButtonWithText::ButtonWithText () : Content(), Button(){
+		wnds = new SingleWnd ();
+	}
 	ProcessView* Components::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
 	{
 		ProcessButton* process = new ProcessButton ( this , hwnd );
+		wnds->add ( process );
 		if( builder )
 			builder->build ( process );
 		return process;

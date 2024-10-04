@@ -36,6 +36,7 @@ namespace Components {
 		TextPaintForm *textFormat = new TextPaintForm();
 		//TODO оптимизированный класс wstring в stdminus.h, измен€емые строки
 		// ”наследовано через Content
+		ButtonWithText ();
 		ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
 		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
