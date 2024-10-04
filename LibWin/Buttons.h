@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Components.h"
+#include "Visual.h"
+
+using namespace Util;
 
 namespace Components {
 
@@ -26,6 +29,7 @@ namespace Components {
 	class ButtonWithText : public Content , public Button {
 	public:
 		WCHAR* text = new WCHAR[1]{0};//TODO draw
+		TextPaintForm *textFormat = new TextPaintForm();
 		//TODO оптимизированный класс wstring в stdminus.h, измен€емые строки
 		// ”наследовано через Content
 		void configure ( HWND hWnd , ProcBuilder* ) override;

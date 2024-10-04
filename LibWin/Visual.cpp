@@ -1,7 +1,7 @@
 #include "Visual.h"
 
 namespace Util {
-	void drawText ( HDC hdc , RECT rect , WCHAR* str, TextPaintForm* textFormat, _Out_ TextModel* model) 
+	void drawText ( HDC hdc , RECT rect , WCHAR* str, TextPaintForm* textFormat, _Out_ TextModel* model)
 	{
 		HDC bufHdc = CreateCompatibleDC ( hdc );
 		LPRECT bufRect = new RECT ( rect );
@@ -11,10 +11,13 @@ namespace Util {
 		case NoWrap:
 		{
 			WCHAR* it = str;
-			for ( ; *it != '\0'; it++ )
+			for ( ; *it != '\0' && bufRect->left < bufRect->right; it++ )
 			{
 				ABCFLOAT abc;
 				GetCharABCWidthsFloatA ( hdc , *it , *it ,&abc);
+				LPRECT buf = new RECT ( *bufRect );
+				DrawText ( hdc , it, 1, buf, 0);
+				bufRect->left += abc.abcfB + abc.abcfA + abc.abcfC;
 			}
 		}
 			break;

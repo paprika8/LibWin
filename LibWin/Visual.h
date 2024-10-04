@@ -21,6 +21,14 @@ namespace Util {
 		Cut
 	};
 	struct TextPaintForm {
+		TextPaintForm () {
+			aligment = Left;
+			wrap = NoWrap;
+			interval = 0;
+			indent = 0;
+			color = Color ( 0 , 0 , 0 );
+			backcolor = Color ( 255 , 255 , 255 );
+		}
 		union {
 		public:
 			textAligment aligment;
@@ -31,5 +39,5 @@ namespace Util {
 		Color color;
 		Color backcolor;
 	};
-	void drawText ( HDC hdc, RECT rect, TextPaintForm*, _Out_ TextModel* );
+	void drawText ( HDC hdc, RECT rect , WCHAR* str , TextPaintForm* textFormat , _Out_ TextModel* model );
 }
