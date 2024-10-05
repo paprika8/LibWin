@@ -39,5 +39,5 @@ namespace Util {
 		Color color;
 		Color backcolor;
 	};
-	void drawText ( HDC hdc, RECT rect , WCHAR* str , TextPaintForm* textFormat , _Out_ TextModel* model );
+	void drawText ( HDC hdc , RECT rect , WCHAR* str , TextPaintForm* textFormat , _Out_ TextModel* model );
 }

@@ -3,6 +3,9 @@
 namespace Util {
 	void drawText ( HDC hdc , RECT rect , WCHAR* str, TextPaintForm* textFormat, _Out_ TextModel* model)
 	{
+		COLORREF color = GetBkColor ( hdc );
+		SetBkColor ( hdc , textFormat->backcolor.ToCOLORREF() );
+		SetTextColor ( hdc , textFormat->color.ToCOLORREF () );
 		HDC bufHdc = CreateCompatibleDC ( hdc );
 		LPRECT bufRect = new RECT ( rect );
 		//DrawText ( bufHdc , str , -1 , bufRect , 0 );
@@ -10,14 +13,31 @@ namespace Util {
 		{
 		case NoWrap:
 		{
+			const WCHAR* points = L"...\n";
+			ABCFLOAT abc;
+			GetCharABCWidthsFloatA ( hdc , '.' , '.' , &abc);
+			float lengthEnd = abc.abcfB + abc.abcfA + abc.abcfC;
+			lengthEnd *= 3;
 			WCHAR* it = str;
-			for ( ; *it != '\0' && bufRect->left < bufRect->right; it++ )
+			for ( ; *it != '\0'; it++ )
 			{
-				ABCFLOAT abc;
 				GetCharABCWidthsFloatA ( hdc , *it , *it ,&abc);
-				LPRECT buf = new RECT ( *bufRect );
-				DrawText ( hdc , it, 1, buf, 0);
-				bufRect->left += abc.abcfB + abc.abcfA + abc.abcfC;
+				float length = abc.abcfB + abc.abcfA + abc.abcfC;
+				if ( bufRect->left + length + lengthEnd > bufRect->right )
+				{
+					float lengthToEnd = 0;
+					for ( WCHAR* bufIt = it + 1; *bufIt != '\0' && bufRect->left + length + lengthToEnd <= bufRect->right; bufIt++ )
+					{
+						GetCharABCWidthsFloatA ( hdc , *bufIt , *bufIt , &abc );
+						lengthToEnd += abc.abcfB + abc.abcfA + abc.abcfC;
+					}
+					if ( bufRect->left + length + lengthToEnd > bufRect->right ){
+						DrawText ( hdc , points , -1 , bufRect , 0 );
+						break;
+					}
+				}
+				DrawText ( hdc , it, 1, bufRect , 0);
+				bufRect->left += length;
 			}
 		}
 			break;
@@ -33,12 +53,19 @@ namespace Util {
 			break;
 		default:
 		{
-
+			WCHAR* it = str;
+			for ( ; *it != '\0' && bufRect->left < bufRect->right; it++ )
+			{
+				ABCFLOAT abc;
+				GetCharABCWidthsFloatA ( hdc , *it , *it , &abc );
+				DrawText ( hdc , it , 1 , bufRect , 0 );
+				bufRect->left += abc.abcfB + abc.abcfA + abc.abcfC;
+			}
 		}
 			break;
 		}
-	}
-	inline void getRect () {
-
+		SetBkColor ( hdc , color );
+		delete bufRect;
+		DeleteObject ( bufHdc );
 	}
 }

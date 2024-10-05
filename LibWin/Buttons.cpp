@@ -90,7 +90,7 @@ namespace LibWin {
 			( int ) ( rcDirty->right - rcDirty->left ) ,
 			( int ) ( rcDirty->bottom - rcDirty->top )
 		);
-		Util::drawText (hdc, RECT( *rcDirty ), text, textFormat, 0);
+		Util::drawText ( hdc , RECT ( *rcDirty ) , text , textFormat , 0 );
 		delete brush;
 	}
 
