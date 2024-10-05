@@ -578,7 +578,10 @@ namespace Components {
 	class SizeProcBuilder : public ProcBuilder
 	{
 	public:
-		CSize size;
+		CSize size = CSize(0, 0);
+		SizeProcBuilder ( CSize asize) {
+			size = asize;
+		}
 
 		// Унаследовано через ProcBuilder
 		void build ( ProcessView* ) override;

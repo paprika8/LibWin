@@ -322,12 +322,6 @@ namespace stdminus {
 			}
 			return set::m + mid;
 		}
-		/*void print() {
-			printf("\n");
-			for (int* h = (int*)set::m; h != set::m + set::len; h++)
-				printf("%d ", *h);
-			printf("\n");
-		}*/
 	};
 #pragma endregion
 #pragma region map
