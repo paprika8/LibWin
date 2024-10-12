@@ -30,19 +30,19 @@ namespace Components {
 	}
 
 	HINSTANCE hInstance;
-	set<const char*> isRegistry = set<const char*> ();
+	set<const char*> isRegistry = set<const char*> ();//TODO сохранять имена классов wnd
 #pragma region structures
 	enum MarginType : char
 	{
 		CONTENT = 0b00000000 ,
-		GPARENT = 0b00000001 ,
-		HPARENT = 0b00000010 ,
+		HPARENT = 0b00000001 ,
+		VPARENT = 0b00000010 ,
 		PARENT = 0b00000011 ,
 		LEFT = 0b00001000 ,
-		GCENTER = 0b00001100 ,
+		HCENTER = 0b00001100 ,
 		RIGHT = 0b00000100 ,
 		TOP = 0b00010000 ,
-		HCENTER = 0b00110000 ,
+		VCENTER = 0b00110000 ,
 		BOTTOM = 0b00100000 ,
 	};
 	enum CalcType : unsigned short
@@ -120,10 +120,10 @@ namespace Components {
 			x = 0;
 			y = 0;
 		}
-		CPoint ( short _x , short _y )
+		CPoint ( short ax , short ay )
 		{
-			x = _x;
-			x = _y;
+			x = ax;
+			y = ay;
 		}
 		CPoint ( int l )
 		{
@@ -173,14 +173,46 @@ namespace Components {
 		virtual void reRect ( CPoint& point , CSize& drawSize )
 		{
 			point.x += left;
-			drawSize.width -= left + right;
+			drawSize.width -= left + right;//TODO в процентах
 			point.y += top;
-			drawSize.width -= left + right;
+			drawSize.height -= top + bottom;
 		}
-		virtual void reSize ( CSize& size , char type )
+		virtual void reSize ( CSize& size)
 		{
 			size.width += left + right;
 			size.height += top + bottom;
+		}
+		CPadding ( CPadding& orig )
+		{
+			right = orig.right;
+			top = orig.top;
+			left = orig.left;
+			bottom = orig.bottom;
+		};
+		CPadding ( const CPadding& orig )
+		{
+			right = orig.right;
+			top = orig.top;
+			left = orig.left;
+			bottom = orig.bottom;
+		}
+		CPadding ( short aleft ,
+			short atop ,
+			short aright ,
+			short abottom )
+		{
+			right = aright;
+			top = atop;
+			left = aleft;
+			bottom = abottom;
+		}
+		CPadding ( ll l )
+		{
+			*( ( ll* ) this ) = l;
+		}
+		ll toLong ()
+		{
+			return *( ( ll* ) this );
 		}
 	};
 	struct CMargin
@@ -223,18 +255,18 @@ namespace Components {
 		{
 			return *( ( ll* ) this );
 		}
-		virtual void reRect ( CPoint& point , CSize& drawSize , CSize thisSize , char type )
+		virtual void reRect ( CPoint& point , CSize& drawSize , CSize thisSize , MarginType type)
 		{
 			short x = point.x;
 			short y = point.y;
 			ushort w = thisSize.width;
 			ushort h = thisSize.height;
-			if ( type & GPARENT ) {
+			if ( type & HPARENT ) {
 				w = drawSize.width - left - right;
 				x = point.x + left;
 			}
 			else {
-				switch ( type & GCENTER )
+				switch ( type & HCENTER )
 				{
 				case LEFT:
 					x = point.x + left;
@@ -243,16 +275,16 @@ namespace Components {
 					x = point.x + drawSize.width - right - w;
 					break;
 				default:
-					x = left + point.x + drawSize.width / 2 - thisSize.width / 2;
+					x = point.x + drawSize.width / 2 - thisSize.width / 2;
 					break;
 				}
 			}
-			if ( type & HPARENT ) {
+			if ( type & VPARENT ) {
 				h = drawSize.height - bottom - top;
 				y = point.y + bottom;
 			}
 			else {
-				switch ( type & HCENTER )
+				switch ( type & VCENTER )
 				{
 				case TOP:
 					y = point.y + top;
@@ -270,14 +302,16 @@ namespace Components {
 			drawSize.width = w;
 			drawSize.height = h;
 		}
-		virtual void reSize ( CSize& size )
+		virtual void reSize ( CSize& size )//TODO переписать
 		{
 			size.width += left + right;
 			size.height += top + bottom;
 		}
 	};
 #pragma endregion
-
+	/// <summary>
+	/// указывает как должен создаваться ProcessView
+	/// </summary>
 	class __declspec( novtable ) ProcBuilder
 	{
 	public:
@@ -488,14 +522,20 @@ namespace Components {
 		const char* id = "";
 	};
 
+	/// <summary>
+	/// view с несколькими view внутри
+	/// </summary>
 	class __declspec( novtable ) Composite : virtual public View
 	{
 	public:
 		virtual void add ( View* ) = 0;
 		virtual void remove ( View* ) = 0;
-		virtual void get ( int i ) = 0;
+		virtual View* get ( int i ) = 0;
 	};
 
+	/// <summary>
+	/// view с одним view внутри
+	/// </summary>
 	class __declspec( novtable ) Component : virtual public View
 	{
 	public:
@@ -505,6 +545,9 @@ namespace Components {
 		View* content;
 	};
 
+	/// <summary>
+	/// view без view внутри
+	/// </summary>
 	class __declspec( novtable ) Content : virtual public View
 	{
 		void childDeleted ( Safety* ) override
@@ -512,7 +555,9 @@ namespace Components {
 
 		}
 	};
-
+	/// <summary>
+	/// базовый класс для окон
+	/// </summary>
 	class __declspec( novtable ) Window : public Component
 	{
 	public:
@@ -526,7 +571,6 @@ namespace Components {
 	class __declspec( novtable ) ProcessWindow : public ProcessView
 	{
 	public:
-		static HINSTANCE instance;
 		ProcessWindow ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
 		ProcessWindow ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
 
@@ -542,11 +586,11 @@ namespace Components {
 		}
 		virtual int init ( int width , int hight )
 		{
-			return init ( 400 , 500 , 0 );
+			return init ( width , hight , 0 );
 		}
 		virtual int init ( int width , int hight , unsigned long dwStyle )
 		{
-			return init ( 400 , 500 , 0 , WS_EX_OVERLAPPEDWINDOW );
+			return init ( width , hight , dwStyle , WS_EX_OVERLAPPEDWINDOW );
 		}
 		virtual int init ( int width , int hight , unsigned long dwStyle , unsigned long dwExStyle )
 		{

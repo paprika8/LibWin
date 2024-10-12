@@ -1,5 +1,6 @@
 #include "Components.h"
 
+
 namespace Components {
 	ULONG_PTR gdiplusToken = 0;
 	void moveWnd ( ProcessView* process , ProcessView* child );
@@ -164,7 +165,7 @@ namespace Components {
 		wcex.hInstance = hInstance;
 		wcex.hIcon = LoadIcon ( wcex.hInstance , IDI_APPLICATION );
 		wcex.hCursor = LoadCursor ( NULL , IDC_ARROW );
-		wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
+		wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOWTEXT );
 		wcex.lpszMenuName = NULL;
 		wcex.lpszClassName = getSzWindowClass ();
 
@@ -186,7 +187,7 @@ namespace Components {
 
 	RectPWindow::RectPWindow ( View* aModel , ProcBuilder* data ) : ProcessWindow ( aModel , 0 )
 	{
-		padding = new CPadding ();
+		padding = new CPadding (0, 0, 0, 0);
 		ProcessWindow::init ( 400 , 300 );
 
 		if ( data )
@@ -210,7 +211,7 @@ namespace Components {
 		return win;
 	}
 
-	RectWindow::~RectWindow ()
+	RectWindow::~RectWindow () //TODO удалить ProcessView
 	{
 		if ( content )
 			delete content;
@@ -221,7 +222,7 @@ namespace Components {
 		content = 0;
 	}
 
-	void RectWindow::PVDeleted ( ProcessView* )
+	void RectWindow::PVDeleted ( ProcessView* ) //TODO обнулять ссылки на PV
 	{
 		delete this;
 	}
@@ -229,7 +230,7 @@ namespace Components {
 	void RectWindow::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 		Graphics g ( hdc );
-		SolidBrush* brush = new SolidBrush ( Color ( 255 , 255 , 255 ));
+		SolidBrush* brush = new SolidBrush ( Color ( 255 , 255 , 255 )); //TODO background
 		g.FillRectangle ( brush , //TODO background
 			0 ,
 			0 ,
