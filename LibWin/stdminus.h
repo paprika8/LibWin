@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string.h>
+#include <iostream>
 
 typedef long long ll;
 typedef unsigned long long ull;
@@ -491,10 +492,159 @@ namespace stdminus {
 #pragma endregion
 
 #pragma region str
-	struct str
+	template<class T>
+	struct base_str {
+		T* m;
+
+		int len () {
+			if ( actualSize )
+				return size;
+			for ( T* it = m; *it != 0; it++ )
+				size++;
+			return size;
+		}
+
+		bool operator==( base_str a ) {
+			if ( typeid( *m ) != typeid( *a.m ))
+				return 0;
+
+
+			for ( int i = 0; ; i++ ) {
+				if ( m[i] != a.m[i] )
+					return 0;
+				if ( m[i] == 0 )
+					break;
+			}
+		}
+	protected:
+		int actualSize : 1;
+		unsigned int size : 31;
+	};
+	struct str : public base_str<char>
 	{
-		char* m;
+		str () {
+			m = ( char* ) malloc ( 0 );
+			size = 0;
+			actualSize = 1;
+		}
+		str ( str& s ) {
+			size = s.len ();
+			m = ( char* ) malloc ( size * sizeof ( char ) );
+			memmove ( m , s.m , size );
+			actualSize = 1;
+		}
+		str ( char* c ) {
+			m = c;
+			actualSize = 0;
+		}
+
+		void operator=( str a ) {
+			delete m;
+			size = a.len ();
+			m = ( char* ) malloc ( size * sizeof ( char ) );
+			memmove ( m , a.m , size );
+			actualSize = 1;
+		}
+
+		void operator=( char* a ) {
+			delete m;
+			m = a;
+			actualSize = 0;
+		}
+
+		str operator+( str a ) {
+			str res ( *this );
+			res += a;
+			return res;
+		}
+		str operator+( char* a ) {
+			str res ( *this );
+			res += a;
+			return res;
+		}
+
+		void operator+=( str a ) {
+			m = ( char* ) realloc ( m , ( len () + a.len () + 1 ) * sizeof ( char ) );
+			memmove ( m + len () , a.m , a.len () + 1 );
+			size = len () + a.len ();
+		}
+
+		void operator+=( char* a ) {
+			str buf ( a );
+			m = ( char* ) realloc ( m , ( len () + buf.len () + 1 ) * sizeof ( char ) );
+			memmove ( m + len () , buf.m , buf.len () + 1 );
+			size = len () + buf.len ();
+		}
+
+		~str () {
+			delete m;
+		}
+
 		operator char* ( ) {
+			return m;
+		}
+	};
+	struct wstr : public base_str<wchar_t>
+	{
+		wstr () {
+			m = ( wchar_t* ) malloc ( 0 );
+			size = 0;
+			actualSize = 1;
+		}
+		wstr ( wstr& s ) {
+			size = s.len ();
+			m = ( wchar_t* ) malloc ( size * sizeof ( wchar_t ) );
+			memmove ( m , s.m , size );
+			actualSize = 1;
+		}
+		wstr ( wchar_t* c ) {
+			m = c;
+			actualSize = 0;
+		}
+
+		void operator=( wstr a ) {
+			delete m;
+			size = a.len ();
+			m = ( wchar_t* ) malloc ( size * sizeof ( wchar_t ) );
+			memmove ( m , a.m , size );
+			actualSize = 1;
+		}
+
+		void operator=( wchar_t* a ) {
+			delete m;
+			m = a;
+			actualSize = 0;
+		}
+
+		wstr operator+( wstr a ) {
+			wstr res ( *this );
+			res += a;
+			return res;
+		}
+		wstr operator+( wchar_t* a ) {
+			wstr res ( *this );
+			res += a;
+			return res;
+		}
+
+		void operator+=( wstr a ) {
+			m = ( wchar_t* ) realloc ( m , ( len () + a.len () + 1 ) * sizeof ( wchar_t ) );
+			memmove ( m + len () , a.m , a.len () + 1 );
+			size = len () + a.len ();
+		}
+
+		void operator+=( wchar_t* a ) {
+			wstr buf ( a );
+			m = ( wchar_t* ) realloc ( m , ( len () + buf.len () + 1 ) * sizeof ( wchar_t ) );
+			memmove ( m + len () , buf.m , buf.len () + 1 );
+			size = len () + buf.len ();
+		}
+
+		~wstr () {
+			delete m;
+		}
+
+		operator wchar_t* ( ) {
 			return m;
 		}
 	};

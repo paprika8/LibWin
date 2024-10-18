@@ -61,6 +61,8 @@ namespace LibWin {
 	}
 	LibWin::ButtonWithText::ButtonWithText () : Content(), Button(){
 		wnds = new SingleWnd ();
+		stringFormat->SetAlignment(StringAlignmentNear);
+		stringFormat->SetLineAlignment(StringAlignmentNear);
 	}
 	ProcessView* LibWin::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
 	{
@@ -84,13 +86,25 @@ namespace LibWin {
 			brush = new SolidBrush ( Color ( 30 , 30 , 30 ) );
 		else
 			brush = new SolidBrush ( Color ( 80 , 80 , 80 ) );
-		g.FillRectangle ( brush , //TODO color
+
+		LinearGradientBrush linGrBrush (
+			Point ( 0 , 0 ) ,
+			Point ( 0 , 100 ) ,
+			Color ( 255 , 255 , 255 , 255 ) ,     // opaque black 
+			Color ( 255 , 255 , 255 , 255 ) );  // opaque red
+
+		REAL relativeIntensities[] = { 0, 0.1f, 1 };
+		Color c[] = { Color ( 255 , 255 , 255 , 255 ), Color ( 255 , 0 , 0 , 255 ), Color ( 255 , 255 , 0 , 0 ) };
+
+		linGrBrush.SetInterpolationColors ( c , relativeIntensities , 3 );
+
+		g.FillRectangle ( &linGrBrush , //TODO color
 			rcDirty->left ,
 			rcDirty->top ,
 			( int ) ( rcDirty->right - rcDirty->left ) ,
 			( int ) ( rcDirty->bottom - rcDirty->top )
 		);
-		Util::drawText ( hdc , RECT ( *rcDirty ) , text , textFormat , 0 );
+		Util::drawText ( &g , RECT ( *rcDirty ) , text, stringFormat, font, this->brush);
 		delete brush;
 	}
 

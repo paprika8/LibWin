@@ -44,7 +44,9 @@ namespace LibWin {
 	class ButtonWithText : public Content , public Button {
 	public:
 		WCHAR* text = new WCHAR[1]{0};//TODO draw
-		TextPaintForm *textFormat = new TextPaintForm();
+		StringFormat* stringFormat = new StringFormat();
+		Font *font = createFont(16);
+		Brush* brush = new SolidBrush ( Color ( 255 , 255 , 255 ) );
 		//TODO оптимизированный класс wstring в stdminus.h, измен€емые строки
 		// ”наследовано через Content
 		ButtonWithText ();

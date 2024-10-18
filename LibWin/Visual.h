@@ -3,7 +3,7 @@
 #include "Components.h"
 
 namespace Util {
-	struct TextModel {
+	/*struct TextModel {
 
 	};
 	enum textAligment : unsigned char {
@@ -38,6 +38,11 @@ namespace Util {
 		short indent;
 		Color color;
 		Color backcolor;
-	};
-	void drawText ( HDC hdc , RECT rect , WCHAR* str , TextPaintForm* textFormat , _Out_ TextModel* model );
+	};*/
+
+
+	float kSize = 1.f;
+	Font* createFont (int size = 14 );
+
+	void drawText ( Gdiplus::Graphics *g , RECT rect , WCHAR* str , StringFormat* stringFormat , Font *font , Brush* brush );
 }
