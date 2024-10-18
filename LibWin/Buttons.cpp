@@ -87,18 +87,7 @@ namespace LibWin {
 		else
 			brush = new SolidBrush ( Color ( 80 , 80 , 80 ) );
 
-		LinearGradientBrush linGrBrush (
-			Point ( 0 , 0 ) ,
-			Point ( 0 , 100 ) ,
-			Color ( 255 , 255 , 255 , 255 ) ,     // opaque black 
-			Color ( 255 , 255 , 255 , 255 ) );  // opaque red
-
-		REAL relativeIntensities[] = { 0, 0.1f, 1 };
-		Color c[] = { Color ( 255 , 255 , 255 , 255 ), Color ( 255 , 0 , 0 , 255 ), Color ( 255 , 255 , 0 , 0 ) };
-
-		linGrBrush.SetInterpolationColors ( c , relativeIntensities , 3 );
-
-		g.FillRectangle ( &linGrBrush , //TODO color
+		g.FillRectangle ( brush , //TODO color
 			rcDirty->left ,
 			rcDirty->top ,
 			( int ) ( rcDirty->right - rcDirty->left ) ,
