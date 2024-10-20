@@ -355,7 +355,7 @@ namespace LibWin {
 					y = point.y + top;
 					break;
 				case BOTTOM:
-					y = point.y + h - bottom;
+					y = point.y + contentSize.height - h - bottom;
 					break;
 				default:
 					y = top + point.y + contentSize.height / 2 - thisSize.height / 2;
