@@ -112,7 +112,7 @@ namespace LibWin {
 	class RectWindow : public Window
 	{
 	public:
-		RectWindow ();
+		RectWindow ( ProcBuilder* );
 
 		virtual void show ( int nCmdShow = SW_NORMAL ) override {
 			( ( RectPWindow* ) wnds->get ( 0 ) )->show ( nCmdShow );

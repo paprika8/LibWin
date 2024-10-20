@@ -32,8 +32,8 @@ namespace LibWin {
 			CPoint cord = ( parent->point );
 			CSize size = CSize ( parent->size);
 			padding->reRect (cord, size);
-			comp->getContent()->getMargin()->reRect (cord , size , comp->size , MarginType::CONTENT);
-			comp->getContent ()->Move ( cord, size);
+			comp->getContent()->getMargin()->reRect (cord , size , comp->getContent ()->size , comp->marginType);
+			comp->getContent ()->Move ( cord, comp->getContent()->size );
 
 		}
 		void PositioningFew(PComposite* compos){
@@ -57,7 +57,7 @@ namespace LibWin {
 			}
 			for ( int cont = 0; cont < compos->len (); cont++ ) {
 				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, MBuffer );
-				compos->get ( cont )->Move ( cord , size );
+				compos->get ( cont )->Move ( cord , compos->get ( cont )->size );
 			}
 		}
 

@@ -75,10 +75,10 @@ namespace LibWin {
 
 	}
 
-	RectWindow::RectWindow ()
+	RectWindow::RectWindow ( ProcBuilder* builder )
 	{
 		wnds = new SingleWnd ();
-		configure ( 0 , 0 );
+		configure ( 0 , builder );
 	}
 
 	ProcessView* RectWindow::configure ( HWND hWnd , ProcBuilder* data )
@@ -148,7 +148,7 @@ namespace LibWin {
 			child = content->configure ( process->getHWND () );
 			PComponent* comp = dynamic_cast< PComponent* >( process );
 			comp->setContent (child);
-			Positioner positioner = Positioner ( process);
+			Positioner positioner = Positioner ( process );
 			positioner.Positioning ();
 		}
 	}
