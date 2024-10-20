@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <stdlib.h>
 #include <string.h>
 
 typedef long long ll;
@@ -46,7 +45,7 @@ namespace stdminus {
 		b = buf;
 	}
 #pragma region _base_arr	
-	template <typename T>
+	template <typename T , bool Deletable>
 	struct _base_arr {
 		T* m;
 		virtual T& operator []( int i ) {
@@ -70,12 +69,14 @@ namespace stdminus {
 			return len;
 		}
 		void Delete ( T* h ) {
-			h->~T ();
+			if ( Deletable )
+				h->~T ();
 		}
 		~_base_arr () {
-			for ( T* h = m; m + len > h; h++ ) {
-				h->~T ();
-			}
+			if ( Deletable )
+				for ( T* h = m; m + len > h; h++ ) {
+					h->~T ();
+				}
 			free ( m );
 		}
 	protected:
@@ -95,8 +96,8 @@ namespace stdminus {
 			}
 		}
 	};
-	template <typename T>
-	struct _base_arr<T*> {
+	template <typename T , bool Deletable>
+	struct _base_arr<T*, Deletable> {
 		T** m;
 		virtual T*& operator []( int i ) {
 			if ( i < 0 )
@@ -119,12 +120,14 @@ namespace stdminus {
 			return len;
 		}
 		void Delete ( T** h ) {
-			delete* h;
+			if ( Deletable )
+				delete* h;
 		}
 		~_base_arr () {
-			for ( T** h = m; m + len > h; h++ ) {
-				delete* h;
-			}
+			if( Deletable )
+				for ( T** h = m; m + len > h; h++ ) {
+					delete* h;
+				}
 			free ( m );
 		}
 	protected:
@@ -146,13 +149,13 @@ namespace stdminus {
 	};
 #pragma endregion
 #pragma region arr
-	template <typename T>
-	struct arr : public _base_arr<T> {
+	template <typename T , bool Deletable>
+	struct arr : public _base_arr<T, Deletable> {
 		arr () {
 			arr::len = 0;
 			arr::m = ( T* ) malloc ( 0 );
 		}
-		arr ( const arr<T>& orig ) {
+		arr ( const arr<T, Deletable>& orig ) {
 			arr::len = orig.len;
 			arr::m = ( T* ) malloc ( sizeof ( T ) * arr::len );
 			if ( arr::len )
@@ -214,13 +217,13 @@ namespace stdminus {
 	};
 #pragma endregion
 #pragma region starr
-	template <typename T>
-	struct starr : public _base_arr<T> {
+	template <typename T , bool Deletable>
+	struct starr : public _base_arr<T, Deletable> {
 		starr ( uint l ) {
 			starr::len = l;
 			starr::m = ( T* ) malloc ( l * sizeof ( T ) );
 		}
-		starr ( starr<T>& orig ) {
+		starr ( starr<T, Deletable>& orig ) {
 			starr::len = orig.len;
 			starr::m = ( T* ) malloc ( sizeof ( T ) * starr::len );
 			memmove ( starr::m , orig.m , sizeof ( T ) * starr::len );
@@ -243,9 +246,9 @@ namespace stdminus {
 #pragma endregion
 
 #pragma region Event
-	template<class T , class... Arg>
-	struct Event : public arr<std::function<T ( Arg... )>> {
-		starr<T> use ( Arg... args ) {
+	template<class T , bool Deletable , class... Arg>
+	struct Event : public arr<std::function<T ( Arg... )>, false> {
+		starr<T, Deletable> use ( Arg... args ) {
 			starr<T> res = starr<T> ( this->len );
 			for ( auto i = 0; i < this->len; i++ )
 				res[i] = ( *( this->m + i ) )( args );
@@ -254,7 +257,7 @@ namespace stdminus {
 	};
 
 	template<class... Arg>
-	struct Event<void , Arg...> : public arr<std::function<void ( Arg... )>> {
+	struct Event<void , false, Arg...> : public arr<std::function<void ( Arg... )>, false> {
 		void use ( Arg... a ) {
 			for ( auto i = 0; i < this->len; i++ )
 				this->m[i] ( a );
@@ -265,8 +268,8 @@ namespace stdminus {
 
 
 #pragma region set
-	template <typename T>
-	struct set : public _base_arr<T> {
+	template <typename T, bool Deletable>
+	struct set : public _base_arr<T, Deletable> {
 		set () {
 			set::len = 0;
 			set::m = ( T* ) malloc ( 0 );
@@ -332,7 +335,7 @@ namespace stdminus {
 #pragma endregion
 #pragma region map
 	template<typename T2 , typename U>
-	struct map : public set<mpair<T2 , U>> {
+	struct map : public set<mpair<T2 , U>, true> {
 		std::function<U ()> init;
 		map ( std::function<U ()> func ) {
 			map::len = 0;
@@ -369,7 +372,7 @@ namespace stdminus {
 	};
 
 	template<typename U>
-	struct map<int , U> : public set<mpair<int , U>> {
+	struct map<int , U> : public set<mpair<int , U>, true> {
 		std::function<U ()> init;
 		map ( std::function<U ()> func ) {
 			map::len = 0;
@@ -408,14 +411,14 @@ namespace stdminus {
 
 #pragma region WEvents
 	template<class T , class... Arg>
-	struct WEvents : public map<int , arr<std::function<T ( Arg... )>>> {
-		WEvents () : map<int , arr<std::function<T ( Arg... )>>> ( []()->arr<std::function<T ( Arg... )>> {return arr<std::function<T ( Arg... )>> (); } ) {
+	struct WEvents : public map<int , arr<std::function<T ( Arg... )>, false>> {
+		WEvents () : map<int , arr<std::function<T ( Arg... )>, false>> ( []()->arr<std::function<T ( Arg... )> , false> {return arr<std::function<T ( Arg... )> , false> (); } ) {
 
 		}
-		arr<std::function<T ( Arg... )>>* has ( T a ) {
-			mpair<int , arr<std::function<T ( Arg... )>>> buf;
+		arr<std::function<T ( Arg... )>, false>* has ( T a ) {
+			mpair<int , arr<std::function<T ( Arg... )> , false>> buf;
 			buf.x = a;
-			mpair<int , arr<std::function<T ( Arg... )>>>* it = WEvents::binFound ( buf );
+			mpair<int , arr<std::function<T ( Arg... )> , false>>* it = WEvents::binFound ( buf );
 			if ( !WEvents::len || ( it - 1 )->x != a || ( it - 1 ) < WEvents::m )
 				return 0;
 			return &it->y;

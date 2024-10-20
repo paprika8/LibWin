@@ -141,8 +141,11 @@
     <ClInclude Include="Buttons.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Safety.h" />
+    <ClInclude Include="UIStructs.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="LibWin.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LibWin.rc" />
@@ -151,7 +154,9 @@
     <ClCompile Include="Buttons.cpp" />
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="stdminus.h" />
+    <ClCompile Include="UIStructs.cpp" />
     <ClCompile Include="Visual.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="general.md" />

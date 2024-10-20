@@ -1,7 +1,7 @@
 #include "Buttons.h"
 #include "Visual.h"
-namespace Components {
-	void Components::Button::PVDeleted ( ProcessView* )
+namespace LibWin {
+	void LibWin::Button::PVDeleted ( ProcessView* )
 	{
 		delete this;
 	}
@@ -36,9 +36,6 @@ namespace Components {
 	}
 	ProcessButton::ProcessButton ( View* aModel , HWND hwnd , const char* _id = "" ) : ProcessView ( aModel , hwnd , _id )
 	{
-		
-
-
 		hWnd = CreateWindowEx (
 			0 ,
 			model->getSzWindowClass () ,
@@ -62,10 +59,10 @@ namespace Components {
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 	}
-	Components::ButtonWithText::ButtonWithText () : Content(), Button(){
+	LibWin::ButtonWithText::ButtonWithText () : Content(), Button(){
 		wnds = new SingleWnd ();
 	}
-	ProcessView* Components::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
+	ProcessView* LibWin::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
 	{
 		ProcessButton* process = new ProcessButton ( this , hwnd );
 		wnds->add ( process );
@@ -74,12 +71,12 @@ namespace Components {
 		return process;
 	}
 
-	TCHAR* Components::Button::getSzWindowClass ()
+	const wchar_t* LibWin::Button::getSzWindowClass ()
 	{
-		return ( TCHAR* ) L"Button";
+		return L"Button";
 	}
 
-	void Components::ButtonWithText::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
+	void LibWin::ButtonWithText::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 		Graphics g ( hdc );
 		SolidBrush* brush; 
@@ -145,38 +142,38 @@ namespace Components {
 		}
 	}
 
-	void Components::ButtonWrap::childDeleted ( Safety* )
+	void LibWin::ButtonWrap::childDeleted ( Safety* )
 	{
 	}
 
-	ProcessView* Components::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
+	ProcessView* LibWin::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
 	{
 		return 0;
 	}
 
-	void Components::ButtonWrap::Unregister ()
+	void LibWin::ButtonWrap::Unregister ()
 	{
 	}
 
-	void Components::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
+	void LibWin::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 	}
 
-	void Components::ButtonWrap::setContent ( View* view )
+	void LibWin::ButtonWrap::setContent ( View* view )
 	{
 	}
 
-	CMargin* Components::ProcessButton::getMargin ()
+	CMargin* LibWin::ProcessButton::getMargin ()
 	{
 		return &margin;
 	}
 
-	CPadding* Components::ProcessButton::getPadding ()
+	CPadding* LibWin::ProcessButton::getPadding ()
 	{
 		return nullptr;
 	}
 
-	CSize Components::ProcessButton::GetContentSize ()
+	CSize LibWin::ProcessButton::GetContentSize ()
 	{
 		return size;
 	}
