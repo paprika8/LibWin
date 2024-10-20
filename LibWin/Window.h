@@ -19,11 +19,11 @@ namespace LibWin {
 	/// <summary>
 	/// Базовый класс для моделей отображения окон
 	/// </summary>
-	class __declspec( novtable ) ProcessWindow : public ProcessView
+	class __declspec( novtable ) ProcessWindow : public PComponent
 	{
 	public:
-		ProcessWindow ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
-		ProcessWindow ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+		ProcessWindow ( View* aModel , HWND hwnd ) : PComponent ( aModel , hwnd ) {}
+		ProcessWindow ( View* aModel , HWND hwnd , const char* _id ) : PComponent ( aModel , hwnd , _id ) {}
 
 		virtual void show ( int nCmdShow ) {
 			ShowWindow ( hWnd ,
@@ -68,6 +68,9 @@ namespace LibWin {
 			_In_opt_ HINSTANCE hInstance ,
 			_In_opt_ LPVOID lpParam
 		) = 0;
+
+
+		void setContent ( ProcessView* view ) override;
 	};
 
 	/// <summary>

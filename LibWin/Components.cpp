@@ -1,4 +1,6 @@
 #include "Components.h"
+#include "ProcBuilders.h"
+#include "Positioner.h"
 
 
 namespace LibWin {
@@ -58,11 +60,8 @@ namespace LibWin {
 			if(!pData->that )
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 			pData->that->size = lParam;
-			View *view = pData->that->getModel ();
-			Component* comp = dynamic_cast < Component* >( view );
-			if ( comp && comp->getContent () && comp->getContent ()->wnds) {
-				moveWnd ( pData->that , comp->getContent ()->wnds->get ( 0 ) );
-			}
+			Positioner positioner = Positioner ( pData->that );
+			positioner.Positioning ();
 		}
 		return 0;
 		case WM_DESTROY:
@@ -159,12 +158,17 @@ namespace LibWin {
 	{
 		return !single;
 	}
-	SizeProcBuilder::SizeProcBuilder ( CSize asize)
+	SizeProcBuilder::SizeProcBuilder ( CSize asize, MarginType atype)
 	{
 		size = asize;
+		marginType = atype;
 	}
 	void SizeProcBuilder::build ( ProcessView* process)
 	{
 		process->size = size;
+		PComposite* isPComposite = dynamic_cast< PComposite* >( process );
+		if ( isPComposite ) {
+			isPComposite->marginType = this->marginType;
+		}
 	}
 }

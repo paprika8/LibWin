@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Positioner.h"
 
 namespace LibWin {
 	int RectPWindow::init ( _In_ DWORD dwExStyle , _In_ DWORD dwStyle , _In_ int X , _In_ int Y , _In_ int nWidth , _In_ int nHeight ,
@@ -145,8 +146,17 @@ namespace LibWin {
 		ProcessView* child , * process = 0;
 		if ( process = wnds->get ( 0 ) ) {
 			child = content->configure ( process->getHWND () );
-			moveWnd ( process , child );
+			PComponent* comp = dynamic_cast< PComponent* >( process );
+			comp->setContent (child);
+			Positioner positioner = Positioner ( process);
+			positioner.Positioning ();
 		}
+	}
+
+	void ProcessWindow::setContent ( ProcessView* view )
+	{
+		content = view;
+
 	}
 }
 

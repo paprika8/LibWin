@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="Buttons.h" />
     <ClInclude Include="Components.h" />
+    <ClInclude Include="Positioner.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Safety.h" />
     <ClInclude Include="UIStructs.h" />
@@ -153,6 +154,8 @@
   <ItemGroup>
     <ClCompile Include="Buttons.cpp" />
     <ClCompile Include="Components.cpp" />
+    <ClCompile Include="Positioner.cpp" />
+    <ClCompile Include="ProcBuilders.h" />
     <ClCompile Include="stdminus.h" />
     <ClCompile Include="UIStructs.cpp" />
     <ClCompile Include="Visual.cpp" />

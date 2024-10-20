@@ -125,6 +125,7 @@ namespace LibWin {
 
 	};
 
+
 	/// <summary>
 	/// Родительский класс для всех моделей отображения компонентов
 	/// </summary>
@@ -141,6 +142,12 @@ namespace LibWin {
 			id = _id;
 			model = aModel;
 		}
+		void Move ( CPoint apoint , CSize asize ) {
+			point = apoint;
+			size = asize;
+			MoveWindow (hWnd, point.x, point.y, size.width, size.height, 1);
+		}
+		virtual CSize GetContentSize () = 0;
 		View* getModel () { return model; }
 		virtual ~ProcessView ()
 		{
@@ -154,6 +161,7 @@ namespace LibWin {
 		virtual CPadding* getPadding () = 0;
 
 		CSize size = CSize ( 0 , 0 );
+		CPoint point = CPoint ( 0 , 0 );
 
 #pragma region get_set_ClLongPtr
 		ATOM getAtom ()
@@ -215,7 +223,7 @@ namespace LibWin {
 		HWND hWnd = 0;
 
 
-		virtual CSize GetContentSize () = 0;
+		
 
 #pragma region get_set_ClLongPtr
 		void setExtra ( int value )
@@ -265,6 +273,38 @@ namespace LibWin {
 	};
 
 	/// <summary>
+	/// Pview с несколькими Pview внутри
+	/// </summary>
+	class __declspec( novtable ) PComposite : virtual public ProcessView
+	{
+	public:
+		MarginType marginType = MarginType::CONTENT;
+		virtual void add ( ProcessView* ) = 0;
+		virtual void remove ( ProcessView* ) = 0;
+		virtual ProcessView* get ( int i ) = 0;
+		virtual int len () = 0;
+
+		PComposite ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
+		PComposite ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+	};
+
+	/// <summary>
+	/// Pview с одним Pview внутри
+	/// </summary>
+	class __declspec( novtable ) PComponent : virtual public ProcessView
+	{
+	public:
+		virtual void setContent ( ProcessView* view ) = 0;
+		virtual ProcessView* getContent () { return content; }
+	protected:
+		ProcessView* content = 0;
+	public:
+
+		PComponent ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
+		PComponent ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+	};
+
+	/// <summary>
 	/// view с несколькими view внутри
 	/// </summary>
 	class __declspec( novtable ) Composite : virtual public View
@@ -273,6 +313,7 @@ namespace LibWin {
 		virtual void add ( View* ) = 0;
 		virtual void remove ( View* ) = 0;
 		virtual View* get ( int i ) = 0;
+		virtual int len () = 0;
 	};
 
 	/// <summary>
@@ -298,15 +339,5 @@ namespace LibWin {
 		}
 	};
 
-	/// <summary>
-	/// Устанавливает размер ProcessView при его создании
-	/// </summary>
-	class SizeProcBuilder : public ProcBuilder
-	{
-	public:
-		CSize size;
-		SizeProcBuilder ( CSize );
 
-		void build ( ProcessView* ) override;
-	};
 }
