@@ -1,7 +1,7 @@
 #include "Buttons.h"
 #include "Visual.h"
-namespace Components {
-	void Components::Button::PVDeleted ( ProcessView* )
+namespace LibWin {
+	void LibWin::Button::PVDeleted ( ProcessView* )
 	{
 		delete this;
 	}
@@ -64,19 +64,19 @@ namespace Components {
 		stringFormat->SetAlignment ( StringAlignmentNear );
 		stringFormat->SetLineAlignment ( StringAlignmentNear );
 	}
-	void Components::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
+	void LibWin::ButtonWithText::configure ( HWND hwnd , ProcBuilder* builder)
 	{
 		ProcessButton* process = new ProcessButton ( this , hwnd );
 		if( builder )
 			builder->build ( process );
 	}
 
-	TCHAR* Components::Button::getSzWindowClass ()
+	const wchar_t* LibWin::Button::getSzWindowClass ()
 	{
-		return ( TCHAR* ) L"Button";
+		return L"Button";
 	}
 
-	void Components::ButtonWithText::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
+	void LibWin::ButtonWithText::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 		Graphics g ( hdc );
 		SolidBrush* brush; 
@@ -143,37 +143,37 @@ namespace Components {
 		}
 	}
 
-	void Components::ButtonWrap::childDeleted ( Safety* )
+	void LibWin::ButtonWrap::childDeleted ( Safety* )
 	{
 	}
 
-	void Components::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
+	void LibWin::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
 	{
 	}
 
-	void Components::ButtonWrap::Unregister ()
+	void LibWin::ButtonWrap::Unregister ()
 	{
 	}
 
-	void Components::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
+	void LibWin::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 	}
 
-	void Components::ButtonWrap::setContent ( View* view )
+	void LibWin::ButtonWrap::setContent ( View* view )
 	{
 	}
 
-	CMargin* Components::ProcessButton::getMargin ()
-	{
-		return nullptr;
-	}
-
-	CPadding* Components::ProcessButton::getPadding ()
+	CMargin* LibWin::ProcessButton::getMargin ()
 	{
 		return nullptr;
 	}
 
-	CSize Components::ProcessButton::GetContentSize ()
+	CPadding* LibWin::ProcessButton::getPadding ()
+	{
+		return nullptr;
+	}
+
+	CSize LibWin::ProcessButton::GetContentSize ()
 	{
 		return size;
 	}

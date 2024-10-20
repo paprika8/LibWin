@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <stdlib.h>
 #include <string.h>
 #include <iostream>
 
