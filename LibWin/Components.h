@@ -275,7 +275,7 @@ namespace LibWin {
 	/// <summary>
 	/// Pview с несколькими Pview внутри
 	/// </summary>
-	class __declspec( novtable ) PComposite : virtual public ProcessView
+	class __declspec( novtable ) PComposite : public ProcessView
 	{
 	public:
 		MarginType marginType = MarginType::CONTENT;
@@ -291,9 +291,10 @@ namespace LibWin {
 	/// <summary>
 	/// Pview с одним Pview внутри
 	/// </summary>
-	class __declspec( novtable ) PComponent : virtual public ProcessView
+	class __declspec( novtable ) PComponent : public ProcessView
 	{
 	public:
+		MarginType marginType = MarginType::CONTENT;
 		virtual void setContent ( ProcessView* view ) = 0;
 		virtual ProcessView* getContent () { return content; }
 	protected:
@@ -307,7 +308,7 @@ namespace LibWin {
 	/// <summary>
 	/// view с несколькими view внутри
 	/// </summary>
-	class __declspec( novtable ) Composite : virtual public View
+	class __declspec( novtable ) Composite : public View
 	{
 	public:
 		virtual void add ( View* ) = 0;
