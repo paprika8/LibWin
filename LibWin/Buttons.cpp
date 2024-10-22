@@ -1,9 +1,9 @@
 #include "Buttons.h"
 #include "Visual.h"
 namespace LibWin {
-	void LibWin::Button::PVDeleted ( ProcessView* )
+	void LibWin::Button::PVDeleted ( ProcessView* process )
 	{
-		delete this;
+		wnds->rem ( process->getHWND () );
 	}
 	int Button::Register ()
 	{
@@ -58,7 +58,40 @@ namespace LibWin {
 		CData* cData = new CData ();
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
+
+		margin = new CMargin ( 0 , 0 , 0 , 0 );
+		padding = new CPadding ( 0 , 0 , 0 , 0 );
 	}
+
+	ProcessButtonWrap::ProcessButtonWrap ( View* aModel , HWND hwnd , const char* _id = "" ) : PComponent ( aModel , hwnd , _id )
+	{
+		hWnd = CreateWindowEx (
+			0 ,
+			model->getSzWindowClass () ,
+			L"" ,
+			WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON ,
+			0 , 0 ,
+			100 , 100 ,
+			hwnd ,
+			NULL ,
+			hInstance ,
+			NULL
+		);
+		if ( !hWnd )
+		{
+			MessageBox ( NULL ,
+				_T ( "Call to CreateWindowEx failed!" ) ,
+				_T ( "Windows Desktop Guided Tour" ) ,
+				NULL );
+		}
+		CData* cData = new CData ();
+		cData->that = this;
+		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
+
+		margin = new CMargin ( 0 , 0 , 0 , 0 );
+		padding = new CPadding ( 0 , 0 , 0 , 0 );
+	}
+
 	LibWin::ButtonWithText::ButtonWithText () : Content(), Button(){
 		wnds = new SingleWnd ();
 		stringFormat->SetAlignment(StringAlignmentNear);
@@ -145,13 +178,30 @@ namespace LibWin {
 		}
 	}
 
-	void LibWin::ButtonWrap::childDeleted ( Safety* )
+	ButtonWrap::ButtonWrap ()
 	{
+		wnds = new SingleWnd ();
 	}
 
-	ProcessView* LibWin::ButtonWrap::configure ( HWND hWnd , ProcBuilder* )
+	void LibWin::ButtonWrap::childDeleted ( Safety* )
 	{
-		return 0;
+		content = 0;
+	}
+
+	ProcessView* LibWin::ButtonWrap::configure ( HWND hwnd , ProcBuilder* builder )
+	{
+		ProcessButtonWrap* process = new ProcessButtonWrap ( this , hwnd );
+		wnds->add ( process );
+		if ( builder )
+			builder->build ( process );
+		if ( content ) {
+			ProcessView* child = content->configure ( process->getHWND () );
+			PComponent* comp = dynamic_cast< PComponent* >( process );
+			comp->setContent ( child );
+			Positioner positioner = Positioner ( process );
+			positioner.Positioning ();
+		}
+		return process;
 	}
 
 	void LibWin::ButtonWrap::Unregister ()
@@ -160,24 +210,116 @@ namespace LibWin {
 
 	void LibWin::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
+		Graphics g ( hdc );
+		SolidBrush* brush;
+		if ( ( ( ProcessButton* ) pData )->isDown )
+			brush = new SolidBrush ( Color ( 30 , 0 , 0 ) );
+		else
+			brush = new SolidBrush ( Color ( 80 , 0 , 0 ) );
+
+		g.FillRectangle ( brush , //TODO color
+			rcDirty->left ,
+			rcDirty->top ,
+			( int ) ( rcDirty->right - rcDirty->left ) ,
+			( int ) ( rcDirty->bottom - rcDirty->top )
+		);
+		delete brush;
+	}
+
+	LRESULT ButtonWrap::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
+	{
+		ProcessButton* pButton = ( ProcessButton* ) pData;
+		switch ( uMsg )
+		{
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONDBLCLK:
+		{
+			pButton->isDown = true;
+			InvalidateRect ( hwnd , 0 , 0 );
+
+			SetCapture ( hwnd );
+			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+		}
+		case LBN_KILLFOCUS:
+		case WM_MOUSEMOVE:
+		{
+			LPPOINT point = new POINT ();
+			if ( pButton->isDown && GetCursorPos ( point ) && WindowFromPoint ( *point ) == hwnd ) {
+				delete point;
+				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+			}
+			delete point;
+		}
+		case WM_LBUTTONUP:
+		{
+			pButton->isDown = false;
+			InvalidateRect ( hwnd , 0 , 0 );
+
+			ReleaseCapture ();
+			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+		}
+		case WM_PAINT:
+		{
+			PAINTSTRUCT paintStruct;
+			HDC hDC = BeginPaint ( hwnd , &paintStruct );
+
+			VDPaintBuffer ( hwnd , &paintStruct );
+
+			EndPaint ( hwnd , &paintStruct );
+
+			return 0;
+		}
+		default:
+			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+		}
 	}
 
 	void LibWin::ButtonWrap::setContent ( View* view )
 	{
+		if ( content )
+			delete content;
+		content = view;
+		view->parent = this;
+		ProcessView* child , * process = 0;
+		if ( process = wnds->get ( 0 ) ) {
+			child = content->configure ( process->getHWND () );
+			PComponent* comp = dynamic_cast< PComponent* >( process );
+			comp->setContent ( child );
+			Positioner positioner = Positioner ( process );
+			positioner.Positioning ();
+		}
 	}
 
 	CMargin* LibWin::ProcessButton::getMargin ()
 	{
-		return &margin;
+		return margin;
 	}
 
 	CPadding* LibWin::ProcessButton::getPadding ()
 	{
-		return nullptr;
+		return padding;
 	}
 
 	CSize LibWin::ProcessButton::GetContentSize ()
 	{
 		return size;
+	}
+	CMargin* LibWin::ProcessButtonWrap::getMargin ()
+	{
+		return margin;
+	}
+
+	CPadding* LibWin::ProcessButtonWrap::getPadding ()
+	{
+		return padding;
+	}
+
+	CSize LibWin::ProcessButtonWrap::GetContentSize ()
+	{
+		return size;
+	}
+	void ProcessButtonWrap::setContent ( ProcessView* view )
+	{
+		content = view;
 	}
 }

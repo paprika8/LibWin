@@ -9,10 +9,12 @@ namespace LibWin {
 
 	public:
 		ProcessView *parent;
-		Positioner ( ProcessView* aparent ) {
+		Positioner ( ProcessView* aparent ) 
+		{
 			parent = aparent;
 		}
-		void Positioning(){
+		void Positioning() 
+		{
 			PComponent* comp = dynamic_cast < PComponent* >( parent );
 			if ( comp ) {
 				PositioningOne (comp);
@@ -24,19 +26,23 @@ namespace LibWin {
 		}
 
 	private:
-		void PositioningOne(PComponent* comp){
-			if ( !comp->getContent () ) {
+		void PositioningOne(PComponent* comp) 
+		{
+			if ( !comp->getContent () ) 
+			{
 				return;
 			}
 			CPadding *padding = parent->getPadding ();
-			CPoint cord = ( parent->point );
+			CPoint cord = CPoint ( );
 			CSize size = CSize ( parent->size);
 			padding->reRect (cord, size);
-			comp->getContent()->getMargin()->reRect (cord , size , comp->getContent ()->size , comp->marginType);
+			MarginType marginType = (comp->marginType & ~MarginType::PARENT) | comp->getContent ()->marginType; 
+			comp->getContent()->getMargin()->reRect (cord , size , comp->getContent ()->size , marginType );
 			comp->getContent ()->Move ( cord, comp->getContent()->size );
 
 		}
-		void PositioningFew(PComposite* compos){
+		void PositioningFew(PComposite* compos) 
+		{
 			CPadding* padding = parent->getPadding ();
 			CPoint cord = ( parent->point );
 			CSize size = CSize ( parent->size );
@@ -56,13 +62,11 @@ namespace LibWin {
 				MBuffer = ( MarginType ) ( MBuffer ^ MarginType::VCENTER | MarginType::TOP );
 			}
 			for ( int cont = 0; cont < compos->len (); cont++ ) {
+				MarginType marginType = MBuffer & ~MarginType::PARENT | compos->get ( cont )->marginType;
 				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, MBuffer );
 				compos->get ( cont )->Move ( cord , compos->get ( cont )->size );
 			}
 		}
-
-
-
 	};
 };
 

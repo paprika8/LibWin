@@ -32,8 +32,9 @@ namespace LibWin {
 
 	RectPWindow::~RectPWindow ()
 	{
-		if ( hWnd )
-			SendMessage ( hWnd , WM_CLOSE , 0 , 0 );
+		/*if ( hWnd )
+			SendMessage ( hWnd , WM_CLOSE , 0 , 0 );*/
+
 		PostQuitMessage ( 0 );
 	}
 
@@ -103,9 +104,9 @@ namespace LibWin {
 		content = 0;
 	}
 
-	void RectWindow::PVDeleted ( ProcessView* ) //TODO обнулять ссылки на PV
+	void RectWindow::PVDeleted ( ProcessView* process) //TODO обнулять ссылки на PV
 	{
-		delete this;
+		wnds->rem ( process->getHWND() );
 	}
 
 	void RectWindow::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
@@ -139,8 +140,10 @@ namespace LibWin {
 
 	void RectWindow::setContent ( View* view )
 	{
-		if ( content )
+		if ( content ) {
+			content->parent = 0;
 			delete content;
+		}
 		content = view;
 		view->parent = this;
 		ProcessView* child , * process = 0;

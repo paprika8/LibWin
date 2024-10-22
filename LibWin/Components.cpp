@@ -56,10 +56,16 @@ namespace LibWin {
 		}
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		case WM_SIZE:
-		{
-			if(!pData->that )
+			if ( !pData->that )
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
-			pData->that->size = lParam;
+			if ( GetWindowLong ( hwnd , GWL_STYLE ) & WS_SIZEBOX ) {
+				pData->that->size.width = LOWORD ( lParam );
+				pData->that->size.height = HIWORD ( lParam );
+			}
+		case WM_MOVE:
+		{
+			if ( !pData->that )
+				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 			Positioner positioner = Positioner ( pData->that );
 			positioner.Positioning ();
 		}
@@ -138,8 +144,7 @@ namespace LibWin {
 	void SingleWnd::rem ( HWND hwnd )
 	{
 		if ( single->getHWND () == hwnd ) {
-			delete single;
-			single = 0;
+			single = 0; 
 		}
 	}
 	ProcessView* SingleWnd::get ( int i )
@@ -158,6 +163,15 @@ namespace LibWin {
 	{
 		return !single;
 	}
+	SingleWnd::~SingleWnd ()
+	{
+		for ( int i = 0; i < len (); i++ )
+		{
+			ProcessView* process = get ( i );
+			getModel ( process) = 0;
+			delete process;
+		}
+	}
 	SizeProcBuilder::SizeProcBuilder ( CSize asize, MarginType atype)
 	{
 		size = asize;
@@ -165,17 +179,17 @@ namespace LibWin {
 	}
 	void SizeProcBuilder::build ( ProcessView* process)
 	{
+		if( margin )
+			*process->getMargin() = *margin;
+		if ( padding )
+			*process->getPadding() = *padding;
 		process->size = size;
-		PComposite* isPComposite = dynamic_cast< PComposite* >( process );
-		if ( isPComposite ) {
-			isPComposite->marginType = this->marginType;
-		}
-
-		PComponent* isPComponent = dynamic_cast< PComponent* >( process );
-		if ( isPComponent ) {
-			isPComponent->marginType = this->marginType;
-		}
+		process->marginType = this->marginType;
 	}
 
-	
+	View* &WndsManager::getModel ( ProcessView* process )
+	{
+		return process->model;
+	}
+
 }

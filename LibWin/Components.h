@@ -59,9 +59,12 @@ namespace LibWin {
 	public:
 		virtual void add ( ProcessView* ) = 0;
 		virtual void rem ( HWND ) = 0;
-		virtual ProcessView* get ( int ) = 0;
-		virtual int len () = 0;
+		virtual ProcessView* get ( int ) { return 0; };
+		virtual int len () { return 0; };
 		virtual bool isEmpty () = 0;
+		virtual ~WndsManager () {};
+	protected:
+		View* &getModel ( ProcessView* process );
 	};
 
 	class SingleWnd : public WndsManager
@@ -75,6 +78,7 @@ namespace LibWin {
 		virtual ProcessView* get ( int ) override;
 		virtual int len () override;
 		virtual bool isEmpty () override;
+		virtual ~SingleWnd ();
 	private:
 		ProcessView* single;
 	};
@@ -110,6 +114,11 @@ namespace LibWin {
 		WndsManager* wnds = 0;
 
 		ProcBuilder* defaultBuild = 0;
+
+		virtual ~View () {
+			if ( wnds )
+				delete wnds;
+		}
 	protected:
 
 		virtual int Register () = 0;
@@ -131,6 +140,7 @@ namespace LibWin {
 	/// </summary>
 	class __declspec( novtable ) ProcessView
 	{
+		friend WndsManager;
 	public:
 		ProcessView ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd , "" ) {}
 		ProcessView ( View* aModel , HWND hwnd , const char* _id )
@@ -151,7 +161,14 @@ namespace LibWin {
 		View* getModel () { return model; }
 		virtual ~ProcessView ()
 		{
-			model->PVDeleted ( this );
+			if( model ){
+
+				model->PVDeleted ( this );
+			}
+			if ( margin )
+				delete margin;
+			if ( padding )
+				delete padding;
 			/*if ( hWnd )
 				SendMessage(hWnd, WM_DESTROY, 0, 0);*/
 		}
@@ -162,7 +179,7 @@ namespace LibWin {
 
 		CSize size = CSize ( 0 , 0 );
 		CPoint point = CPoint ( 0 , 0 );
-
+		MarginType marginType = MarginType::CONTENT;
 #pragma region get_set_ClLongPtr
 		ATOM getAtom ()
 		{
@@ -278,7 +295,6 @@ namespace LibWin {
 	class __declspec( novtable ) PComposite : public ProcessView
 	{
 	public:
-		MarginType marginType = MarginType::CONTENT;
 		virtual void add ( ProcessView* ) = 0;
 		virtual void remove ( ProcessView* ) = 0;
 		virtual ProcessView* get ( int i ) = 0;
@@ -294,7 +310,6 @@ namespace LibWin {
 	class __declspec( novtable ) PComponent : public ProcessView
 	{
 	public:
-		MarginType marginType = MarginType::CONTENT;
 		virtual void setContent ( ProcessView* view ) = 0;
 		virtual ProcessView* getContent () { return content; }
 	protected:
@@ -325,6 +340,12 @@ namespace LibWin {
 	public:
 		virtual void setContent ( View* view ) = 0;
 		virtual View* getContent () { return content; }
+		~Component () {
+			if ( content ){
+				content->parent = 0;
+				delete content;
+			}
+		}
 	protected:
 		View* content;
 	};

@@ -413,7 +413,7 @@ namespace stdminus {
 			mpair<int , arr<std::function<T ( Arg... )> , false>> buf;
 			buf.x = a;
 			mpair<int , arr<std::function<T ( Arg... )> , false>>* it = WEvents::binFound ( buf );
-			if ( !WEvents::len || ( it - 1 )->x != a || ( it - 1 ) < WEvents::m )
+			if ( !WEvents::len || ( it - 1 ) < WEvents::m || ( it - 1 )->x != a )
 				return 0;
 			return &it->y;
 		}

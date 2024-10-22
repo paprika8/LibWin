@@ -50,8 +50,24 @@ namespace LibWin {
 		/// <summary>
 		/// ƒочерние элементы выравниваютс€ по нижнему краю
 		/// </summary>
-		BOTTOM = 0b00100000 ,
+		BOTTOM = 0b00100000
+	
 	};
+	MarginType operator ~ ( MarginType a) {
+		return ( MarginType ) ( ~( char ) a );
+	}
+	MarginType operator & ( MarginType a , MarginType b ) {
+		return ( MarginType ) ( ( char ) a & ( char ) b );
+	}
+	MarginType operator & ( MarginType a , int b ) {
+		return ( MarginType ) ( ( char ) a & b );
+	}
+	MarginType operator | ( MarginType a , MarginType b ) {
+		return ( MarginType ) ( ( char ) a | ( char ) b );
+	}
+	MarginType operator | ( MarginType a , int b ) {
+		return ( MarginType ) ( ( char ) a | b );
+	}
 	/// <summary>
 	/// ”казывает относительно чего указан размер
 	/// </summary>
@@ -320,7 +336,7 @@ namespace LibWin {
 		/// <param name="contentSize"> - размеры области контента родител€ </param>
 		/// <param name="thisSize"> - размеры этого элемента </param>
 		/// <param name="type"> - тип выравнивани€ </param>
-		virtual void reRect ( CPoint& point , CSize& contentSize , CSize thisSize , MarginType type )
+		virtual void reRect ( CPoint& point , CSize& contentSize , CSize& thisSize , MarginType type )
 		{
 			short x = point.x;
 			short y = point.y;
@@ -364,8 +380,10 @@ namespace LibWin {
 			}
 			point.x = x;
 			point.y = y;
-			contentSize.width = w;
-			contentSize.height = h;
+			thisSize.width = w;
+			thisSize.height = h;
+			contentSize.width = contentSize.width - w - right - left;
+			contentSize.height = contentSize.height - h - top - bottom;
 		}
 		/// <summary>
 		/// ѕрименение отступов к размеру элемента
