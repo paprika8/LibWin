@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <string.h>
-#include <iostream>
 
 typedef long long ll;
 typedef unsigned long long ull;
@@ -491,7 +490,7 @@ namespace stdminus {
 	};
 #pragma endregion
 
-#pragma region str
+/*#pragma region str
 	template<class T>
 	struct base_str {
 		T* m;
@@ -648,5 +647,5 @@ namespace stdminus {
 			return m;
 		}
 	};
-#pragma endregion
+#pragma endregion*/
 }
