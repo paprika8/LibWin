@@ -28,12 +28,14 @@ namespace LibWin {
 			if ( !comp->getContent () ) {
 				return;
 			}
-			CPadding *padding = parent->getPadding ();
+			CPadding padding = *parent->getPadding ();
+			padding = padding.toAbsolut (comp->size);
 			CPoint cord = ( parent->point );
 			CSize size = CSize ( parent->size);
-			padding->reRect (cord, size);
-			comp->getContent()->getMargin()->reRect (cord , size , comp->getContent ()->size , comp->marginType);
-			comp->getContent ()->Move ( cord, comp->getContent()->size );
+			padding.reRect (cord, size);
+			CSize absolutSize = comp->getContent ()->size.toAbsolut ( comp-> size);
+			comp->getContent ()->getMargin ()->toAbsolut ( comp->size ).reRect (cord , size , absolutSize , comp->marginType);
+			comp->getContent ()->Move ( cord, absolutSize );
 
 		}
 		void PositioningFew(PComposite* compos){
@@ -56,6 +58,8 @@ namespace LibWin {
 				MBuffer = ( MarginType ) ( MBuffer ^ MarginType::VCENTER | MarginType::TOP );
 			}
 			for ( int cont = 0; cont < compos->len (); cont++ ) {
+				compos->get ( cont )->getMargin ()->toAbsolut ( compos->size );
+				compos->get ( cont )->size.toAbsolut ( compos->size );
 				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, MBuffer );
 				compos->get ( cont )->Move ( cord , compos->get ( cont )->size );
 			}

@@ -144,7 +144,6 @@ namespace LibWin {
 		}
 		void Move ( CPoint apoint , CSize asize ) {
 			point = apoint;
-			size = asize;
 			MoveWindow (hWnd, point.x, point.y, size.width, size.height, 1);
 		}
 		virtual CSize GetContentSize () = 0;

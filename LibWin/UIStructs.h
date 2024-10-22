@@ -62,13 +62,15 @@ namespace LibWin {
 		/// </summary>
 		px ,
 		/// <summary>
-		/// Единица размера соответствует одной сотой процента от размера родительского элемента
+		/// Единица размера соответствует 1/10 процента от размера родительского элемента
 		/// </summary>
 		percent ,
 		/// <summary>
-		/// Единица размера соответствует одному проценту от установленного размера шрифта в этом элементе
+		/// представляет собой долю доступного пространства в грид-контейнере, равен 1/80 процента
 		/// </summary>
-		em
+		fr
+
+
 	};
 
 	struct CMargin;
@@ -89,6 +91,25 @@ namespace LibWin {
 			value = avalue;
 			type = px;
 		}
+		pointUI toAbsolut ( short original ) {
+			switch ( type ) {
+			case px: {
+				return *this;
+			}
+			case percent: {
+				return (*this).value = original / 1000. * value;
+			}
+			case fr: {
+				return ( *this ).value = original / 8000. * value;
+
+			}
+			default:{
+				return*this;
+			}
+
+			}
+
+		};
 		void operator=( short a ) {
 			value = a;
 		}
@@ -119,6 +140,24 @@ namespace LibWin {
 		upointUI ( unsigned short avalue ) {
 			value = avalue;
 			type = px;
+		}
+		upointUI toAbsolut ( short original ) {
+			switch ( type ) {
+			case px: {
+				return *this;
+			}
+			case percent: {
+				return ( *this ).value = original / 1000. * value;
+			}
+			case fr: {
+				return ( *this ).value = original / 8000. * value;
+
+			}
+			default: {
+				return*this;
+			}
+
+			}
 		}
 		void operator=( unsigned short a ) {
 			value = a;
@@ -171,7 +210,7 @@ namespace LibWin {
 		upointUI width;
 		upointUI height;
 
-		CSize ( )
+		CSize ()
 		{
 			width.type = px;
 			height.type = px;
@@ -203,6 +242,12 @@ namespace LibWin {
 		{
 			return *( ( int* ) this );
 		}
+
+		CSize toAbsolut ( CSize original ) {
+			return CSize ( width.toAbsolut ( original.width ) ,
+				height.toAbsolut ( original.height ) );
+		}
+
 	};
 
 	/// <summary>
@@ -268,6 +313,13 @@ namespace LibWin {
 		{
 			return *( ( ll* ) this );
 		}
+
+		CPadding toAbsolut ( CSize original ) {
+			return CPadding ( left.toAbsolut ( original.width ) ,
+				top.toAbsolut ( original.height ) ,
+				right.toAbsolut ( original.width ) ,
+				bottom.toAbsolut ( original.height ) );
+		}
 	};
 
 	/// <summary>
@@ -313,6 +365,13 @@ namespace LibWin {
 		{
 			return *( ( ll* ) this );
 		}
+		CMargin toAbsolut ( CSize original ) {
+			return CMargin (left.toAbsolut(original.width),
+				top.toAbsolut ( original.height ),
+				right.toAbsolut ( original.width ),
+				bottom.toAbsolut ( original.height ));
+		}
+
 		/// <summary>
 		/// Применение отступов к прямоугольнику
 		/// </summary>
