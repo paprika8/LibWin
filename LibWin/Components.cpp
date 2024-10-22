@@ -170,10 +170,12 @@ namespace LibWin {
 		if ( isPComposite ) {
 			isPComposite->marginType = this->marginType;
 		}
-		process->size = size;
+
 		PComponent* isPComponent = dynamic_cast< PComponent* >( process );
 		if ( isPComponent ) {
 			isPComponent->marginType = this->marginType;
 		}
 	}
+
+	
 }
