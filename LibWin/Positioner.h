@@ -32,13 +32,15 @@ namespace LibWin {
 			{
 				return;
 			}
-			CPadding *padding = parent->getPadding ();
-			CPoint cord = CPoint ( );
+			CPadding padding = *parent->getPadding ();
+			padding = padding.toAbsolut (comp->size);
+			CPoint cord = ( parent->point );
 			CSize size = CSize ( parent->size);
-			padding->reRect (cord, size);
-			MarginType marginType = (comp->marginType & ~MarginType::PARENT) | comp->getContent ()->marginType; 
-			comp->getContent()->getMargin()->reRect (cord , size , comp->getContent ()->size , marginType );
-			comp->getContent ()->Move ( cord, comp->getContent()->size );
+			padding.reRect (cord, size);
+			CSize absolutSize = comp->getContent ()->size.toAbsolut ( comp-> size);
+			MarginType marginType = (comp->marginType & ~MarginType::PARENT) | comp->getContent()->marginType;
+			comp->getContent ()->getMargin ()->toAbsolut ( comp->size ).reRect (cord , size , absolutSize , marginType);
+			comp->getContent ()->Move ( cord, absolutSize );
 
 		}
 		void PositioningFew(PComposite* compos) 
@@ -62,8 +64,10 @@ namespace LibWin {
 				MBuffer = ( MarginType ) ( MBuffer ^ MarginType::VCENTER | MarginType::TOP );
 			}
 			for ( int cont = 0; cont < compos->len (); cont++ ) {
-				MarginType marginType = MBuffer & ~MarginType::PARENT | compos->get ( cont )->marginType;
-				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, MBuffer );
+				compos->get ( cont )->getMargin ()->toAbsolut ( compos->size );
+				compos->get ( cont )->size.toAbsolut ( compos->size );
+				MarginType marginType = MBuffer & ~MarginType::PARENT | compos->get(cont)->marginType;
+				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, marginType);
 				compos->get ( cont )->Move ( cord , compos->get ( cont )->size );
 			}
 		}
