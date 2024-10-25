@@ -83,11 +83,12 @@ namespace LibWin {
 				delete pData->that;
 				free ( pData );
 				pData = 0;
+				SetWindowLongPtr ( hwnd , 0 , ( LONG_PTR ) pData );
 			}
 			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		default:
 			if ( pData )
-				if ( pData->that ) {
+				if ( pData->that && pData->that->getModel () ) {
 					{
 						auto buf = pData->that->getModel ()->eve.has ( uMsg );
 						if ( buf )

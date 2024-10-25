@@ -162,15 +162,16 @@ namespace LibWin {
 		virtual ~ProcessView ()
 		{
 			if( model ){
-
 				model->PVDeleted ( this );
 			}
 			if ( margin )
 				delete margin;
 			if ( padding )
 				delete padding;
-			/*if ( hWnd )
-				SendMessage(hWnd, WM_DESTROY, 0, 0);*/
+			if ( hWnd ){
+				SetWindowLongPtr ( hWnd , 0 , 0 );
+				SendMessage(hWnd, WM_DESTROY, 0, 0);
+			}
 		}
 		const char* getId () { return id; }
 

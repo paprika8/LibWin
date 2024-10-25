@@ -5,6 +5,12 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibWin", "LibWin\LibWin.vcxproj", "{AFCE489A-5E7C-435E-BAEA-892F655917C0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wiki", "wiki", "{972325C4-5F0F-44C2-9F51-84FE26DC06ED}"
+	ProjectSection(SolutionItems) = preProject
+		LibWin\general.md = LibWin\general.md
+		view-processView.md = view-processView.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

@@ -279,6 +279,8 @@ namespace LibWin {
 		if ( content )
 			delete content;
 		content = view;
+		if ( !view )
+			return;
 		view->parent = this;
 		ProcessView* child , * process = 0;
 		if ( process = wnds->get ( 0 ) ) {
