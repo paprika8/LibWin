@@ -103,20 +103,21 @@ namespace LibWin {
 			value = 0;
 			type = px;
 		}
-		pointUI ( short avalue ) {
+		pointUI ( short avalue, CalcType atype = px ) {
 			value = avalue;
-			type = px;
+			type = atype;
 		}
 		pointUI toAbsolut ( short original ) {
+			pointUI copy = pointUI ( *this );
 			switch ( type ) {
 			case px: {
-				return *this;
+				return copy;
 			}
 			case percent: {
-				return (*this).value = original / 1000. * value;
+				return copy.value = round ( original / 1000. * value );
 			}
 			case fr: {
-				return ( *this ).value = original / 8000. * value;
+				return copy.value = round ( original / 8000. * value );
 
 			}
 			default:{
@@ -137,55 +138,6 @@ namespace LibWin {
 		}
 
 		operator short ()
-		{
-			return value;
-		}
-	};
-
-	/// <summary>
-	/// Тип для хранения экранного неотрицательного растояния со способом их перерасчёта в CalcType
-	/// </summary>
-	struct upointUI {
-		unsigned short value : 14;
-		CalcType type : 2;
-
-		upointUI () {
-			value = 0;
-			type = px;
-		}
-		upointUI ( unsigned short avalue ) {
-			value = avalue;
-			type = px;
-		}
-		upointUI toAbsolut ( short original ) {
-			switch ( type ) {
-			case px: {
-				return *this;
-			}
-			case percent: {
-				return ( *this ).value = original / 1000. * value;
-			}
-			case fr: {
-				return ( *this ).value = original / 8000. * value;
-
-			}
-			default: {
-				return*this;
-			}
-
-			}
-		}
-		void operator=( unsigned short a ) {
-			value = a;
-		}
-		void operator+=( unsigned short a ) {
-			value += a;
-		}
-		void operator-=( unsigned short a ) {
-			value -= a;
-		}
-
-		operator unsigned short ()
 		{
 			return value;
 		}
@@ -223,8 +175,8 @@ namespace LibWin {
 	/// </summary>
 	struct CSize
 	{
-		upointUI width;
-		upointUI height;
+		pointUI width;
+		pointUI height;
 
 		CSize ()
 		{
@@ -233,10 +185,15 @@ namespace LibWin {
 			width = 0;
 			height = 0;
 		}
-		CSize ( unsigned short w , unsigned short h )
+		CSize ( short w , short h )
 		{
 			width.type = px;
 			height.type = px;
+			width = w;
+			height = h;
+		}
+		CSize ( pointUI w , pointUI h )
+		{
 			width = w;
 			height = h;
 		}
@@ -246,12 +203,12 @@ namespace LibWin {
 		}
 		CSize plusRight ( CSize b )
 		{
-			return CSize ( width + b.width , max ( height , b.height ) );
+			return CSize ( (short)width + b.width , ( short ) max ( height , b.height ) );
 		}
 		CSize plusRight ( CSize b , CMargin m );
 		CSize plusBottom ( CSize b )
 		{
-			return CSize ( max ( width , b.width ) , height + b.height );
+			return CSize ( ( short ) max ( width , b.width ) , ( short ) height + b.height );
 		}
 		CSize plusBottom ( CSize b , CMargin margin );
 		int toInt ()
@@ -415,7 +372,7 @@ namespace LibWin {
 					x = point.x + contentSize.width - right - w;
 					break;
 				default:
-					x = point.x + contentSize.width / 2 - thisSize.width / 2;
+					x = point.x + contentSize.width / 2. - thisSize.width / 2.;
 					break;
 				}
 			}
@@ -433,7 +390,7 @@ namespace LibWin {
 					y = point.y + contentSize.height - h - bottom;
 					break;
 				default:
-					y = top + point.y + contentSize.height / 2 - thisSize.height / 2;
+					y = top + point.y + contentSize.height / 2. - thisSize.height / 2.;
 					break;
 				}
 			}

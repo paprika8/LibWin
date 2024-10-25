@@ -40,7 +40,9 @@ namespace LibWin {
 
 	int RectWindow::Register ()
 	{
-		WNDCLASS wcex;
+		WNDCLASSEXW wcex;
+
+		wcex.cbSize = sizeof ( WNDCLASSEX );
 
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc = SVProc;
@@ -49,11 +51,12 @@ namespace LibWin {
 		wcex.hInstance = hInstance;
 		wcex.hIcon = LoadIcon ( wcex.hInstance , IDI_APPLICATION );
 		wcex.hCursor = LoadCursor ( NULL , IDC_ARROW );
-		wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOWTEXT );
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 		wcex.lpszMenuName = NULL;
 		wcex.lpszClassName = getSzWindowClass ();
+		wcex.hIconSm = LoadIcon ( wcex.hInstance , MAKEINTRESOURCE ( IDI_SMALL ) );
 
-		if ( !RegisterClass ( &wcex ) )
+		if ( !RegisterClassEx ( &wcex ) )
 		{
 			MessageBox ( NULL ,
 				_T ( "Call to RegisterClassEx failed!" ) ,

@@ -16,7 +16,7 @@ namespace LibWin {
 		wcex.hInstance = hInstance;
 		wcex.hIcon = LoadIcon ( wcex.hInstance , IDI_APPLICATION );
 		wcex.hCursor = LoadCursor ( NULL , IDC_ARROW );
-		wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
+		wcex.hbrBackground = NULL;
 		wcex.lpszMenuName = NULL;
 		wcex.lpszClassName = getSzWindowClass ();
 
@@ -126,7 +126,7 @@ namespace LibWin {
 			( int ) ( rcDirty->right - rcDirty->left ) ,
 			( int ) ( rcDirty->bottom - rcDirty->top )
 		);
-		Util::drawText ( &g , RECT ( *rcDirty ) , text, stringFormat, font, this->brush);
+	    Util::drawText ( &g , RECT ( *rcDirty ) , text, stringFormat, font, this->brush);
 		delete brush;
 	}
 
@@ -153,6 +153,8 @@ namespace LibWin {
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 			}
 			delete point;
+			pButton->isDown = false;
+			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		}
 		case WM_LBUTTONUP:
 		{
@@ -212,7 +214,7 @@ namespace LibWin {
 	{
 		Graphics g ( hdc );
 		SolidBrush* brush;
-		if ( ( ( ProcessButton* ) pData )->isDown )
+		if ( ( ( ProcessButtonWrap* ) pData )->isDown )
 			brush = new SolidBrush ( Color ( 30 , 0 , 0 ) );
 		else
 			brush = new SolidBrush ( Color ( 80 , 0 , 0 ) );
@@ -228,7 +230,7 @@ namespace LibWin {
 
 	LRESULT ButtonWrap::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
 	{
-		ProcessButton* pButton = ( ProcessButton* ) pData;
+		ProcessButtonWrap* pButton = ( ProcessButtonWrap* ) pData;
 		switch ( uMsg )
 		{
 		case WM_LBUTTONDOWN:
@@ -249,6 +251,8 @@ namespace LibWin {
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 			}
 			delete point;
+			pButton->isDown = false;
+			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		}
 		case WM_LBUTTONUP:
 		{

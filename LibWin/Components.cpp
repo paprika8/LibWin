@@ -55,6 +55,7 @@ namespace LibWin {
 			SetWindowLongPtr ( hwnd , 0 , ( LONG_PTR ) pData );
 		}
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+		
 		case WM_SIZE:
 			if ( !pData->that )
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
@@ -103,7 +104,7 @@ namespace LibWin {
 	}
 	int InitLib ( HINSTANCE ahInstance )
 	{
-		hInstance = hInstance;
+		hInstance = ahInstance;
 		GdiplusStartupInput gdiplusStartupInput;
 
 		Status st = GdiplusStartup ( &gdiplusToken , &gdiplusStartupInput , NULL );

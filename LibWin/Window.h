@@ -41,7 +41,7 @@ namespace LibWin {
 		}
 		virtual int init ( int width , int hight , unsigned long dwStyle )
 		{
-			return init ( width , hight , dwStyle , WS_EX_OVERLAPPEDWINDOW );
+			return init ( width , hight , dwStyle , 0 );
 		}
 		virtual int init ( int width , int hight , unsigned long dwStyle , unsigned long dwExStyle )
 		{

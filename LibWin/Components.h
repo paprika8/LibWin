@@ -154,7 +154,7 @@ namespace LibWin {
 		}
 		void Move ( CPoint apoint , CSize asize ) {
 			point = apoint;
-			MoveWindow (hWnd, point.x, point.y, size.width, size.height, 1);
+			MoveWindow (hWnd, point.x, point.y, asize.width, asize.height, 1);
 		}
 		virtual CSize GetContentSize () = 0;
 		View* getModel () { return model; }
@@ -176,6 +176,13 @@ namespace LibWin {
 
 		virtual CMargin* getMargin () = 0;
 		virtual CPadding* getPadding () = 0;
+		CSize getAbsoluteSize () {
+			LPRECT buf = new RECT ();
+			GetClientRect ( hWnd , buf );
+			CSize size = CSize ( buf->right , buf->bottom );
+			delete buf;
+			return size;
+		}
 
 		CSize size = CSize ( 0 , 0 );
 		CPoint point = CPoint ( 0 , 0 );
