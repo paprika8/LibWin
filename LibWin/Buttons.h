@@ -42,9 +42,13 @@ namespace LibWin {
 	/// Модель поведения для кнопок
 	/// </summary>
 	class Button : virtual public View {
+	public:
+		std::function<void ()> click = [] ()-> void{};
+
 		// Унаследовано через View
 		void PVDeleted ( ProcessView* ) override;
 		const wchar_t* getSzWindowClass () override;
+		virtual void Click () { click (); }
 
 		int Register () override;
 		void Unregister () override;

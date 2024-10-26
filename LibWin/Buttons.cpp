@@ -158,6 +158,8 @@ namespace LibWin {
 		}
 		case WM_LBUTTONUP:
 		{
+			if ( pButton->isDown )
+				Click ();
 			pButton->isDown = false;
 			InvalidateRect ( hwnd , 0 , 0 );
 			
@@ -256,6 +258,8 @@ namespace LibWin {
 		}
 		case WM_LBUTTONUP:
 		{
+			if ( pButton->isDown )
+				Click ();
 			pButton->isDown = false;
 			InvalidateRect ( hwnd , 0 , 0 );
 
