@@ -39,6 +39,12 @@
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Positioner.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Blondinka.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LibWin.rc">
@@ -62,6 +68,15 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="UIStructs.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Positioner.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcBuilders.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="Blondinka.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

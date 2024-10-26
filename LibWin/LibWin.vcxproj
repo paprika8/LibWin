@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Blondinka.h" />
     <ClInclude Include="Buttons.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Positioner.h" />
@@ -152,6 +153,7 @@
     <ResourceCompile Include="LibWin.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Blondinka.cpp" />
     <ClCompile Include="Buttons.cpp" />
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Positioner.cpp" />
