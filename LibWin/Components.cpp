@@ -78,8 +78,7 @@ namespace LibWin {
 				{
 					auto buf = pData->that->getModel ()->eve.has ( uMsg );
 					if ( buf )
-						for ( auto i = buf->m; i != buf->m + buf->size (); i++ )
-							( *i )( hwnd , uMsg , wParam , lParam );
+						( *buf )( hwnd , uMsg , wParam , lParam );
 				}
 				delete pData->that;
 				free ( pData );
@@ -93,9 +92,8 @@ namespace LibWin {
 					{
 						auto buf = pData->that->getModel ()->eve.has ( uMsg );
 						if ( buf )
-							for ( auto i = buf->m; i != buf->m + buf->size (); i++ )
-								if ( LRESULT res = ( *i )( hwnd , uMsg , wParam , lParam ) )
-									return res;
+							if ( LRESULT res = ( *buf )( hwnd , uMsg , wParam , lParam ) )
+								return res;
 					}
 					return pData->that->getModel ()->VProc ( hwnd , uMsg , wParam , lParam , pData->that );
 				}

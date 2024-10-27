@@ -1,5 +1,6 @@
 #include "Buttons.h"
 #include "Visual.h"
+#include "Positioner.h"
 namespace LibWin {
 	void LibWin::Button::PVDeleted ( ProcessView* process )
 	{

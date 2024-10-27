@@ -404,18 +404,39 @@ namespace stdminus {
 #pragma endregion
 
 #pragma region WEvents
-	template<class T , class... Arg>
-	struct WEvents : public map<int , arr<std::function<T ( Arg... )>, false>> {
-		WEvents () : map<int , arr<std::function<T ( Arg... )>, false>> ( []()->arr<std::function<T ( Arg... )> , false> {return arr<std::function<T ( Arg... )> , false> (); } ) {
+	template<class... Arg>
+	struct WEvents : public map<int , std::function<LRESULT ( Arg... )>*> {
+		WEvents () : map<int , std::function<LRESULT ( Arg... )>*> 
+			( []()->std::function<LRESULT ( Arg... )>*
+			{ 
+				return 0;
+			} 
+		)
+		{
 
 		}
-		arr<std::function<T ( Arg... )>, false>* has ( T a ) {
-			mpair<int , arr<std::function<T ( Arg... )> , false>> buf;
-			buf.x = a;
-			mpair<int , arr<std::function<T ( Arg... )> , false>>* it = WEvents::binFound ( buf );
-			if ( !WEvents::len || ( it - 1 ) < WEvents::m || ( it - 1 )->x != a )
+
+		mpair<int , std::function<LRESULT ( Arg... )>*>* binFound ( int a ) {
+			int l = 0 , r = WEvents::len - 1 , mid = 0;
+			while ( l <= r ) {
+				mid = ( l + r ) / 2;
+				if ( ( WEvents::m + mid )->x <= a && ( mid + 1 == WEvents::len || ( WEvents::m + mid + 1 )->x > a ) )
+					return WEvents::m + mid + 1;
+				if ( ( WEvents::m + mid )->x <= a )
+					l = mid + 1;
+				else
+					r = mid - 1;
+			}
+			return WEvents::m + mid;
+		}
+
+		std::function<LRESULT ( Arg... )>* has ( LRESULT a ) {
+			if ( !WEvents::len )
 				return 0;
-			return &it->y;
+			auto it = binFound ( a );
+			if ( ( it - 1 ) < WEvents::m || ( it - 1 )->x != a )
+				return 0;
+			return ( it - 1 )->y;
 		}
 	};
 #pragma endregion

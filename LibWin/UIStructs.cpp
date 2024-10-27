@@ -3,10 +3,10 @@
 namespace LibWin {
 	CSize CSize::plusRight ( CSize b , CMargin m )
 	{
-		return CSize ( width + b.width + m.left , max ( height , b.height ) );
+		return CSize ( ( short ) ( width + b.width + m.left ) , ( short ) max ( height , b.height ) );
 	}
 	CSize CSize::plusBottom ( CSize b , CMargin margin )
 	{
-		return CSize ( max ( width , b.width ) , height + b.height + margin.top );
+		return CSize ( ( short ) max ( width , b.width ) , ( short ) ( height + b.height + margin.top ) );
 	}
 }

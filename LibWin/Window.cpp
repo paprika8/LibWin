@@ -54,7 +54,7 @@ namespace LibWin {
 		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 		wcex.lpszMenuName = NULL;
 		wcex.lpszClassName = getSzWindowClass ();
-		wcex.hIconSm = LoadIcon ( wcex.hInstance , MAKEINTRESOURCE ( IDI_SMALL ) );
+		wcex.hIconSm = NULL;// LoadIcon ( wcex.hInstance , MAKEINTRESOURCE ( IDI_SMALL ) );
 
 		if ( !RegisterClassEx ( &wcex ) )
 		{

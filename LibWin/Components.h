@@ -103,7 +103,7 @@ namespace LibWin {
 	{
 		friend ProcessView;
 	public:
-		stdminus::WEvents<LRESULT , HWND , UINT , WPARAM , LPARAM> eve;
+		stdminus::WEvents<HWND , UINT , WPARAM , LPARAM> eve;
 		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* ) = 0;
 		ProcessView* configure ( HWND hWnd ) {
 			return this->configure ( hWnd , defaultBuild );
