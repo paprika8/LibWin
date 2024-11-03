@@ -240,9 +240,16 @@ namespace LibWin {
 		virtual void reRect ( CPoint& point , CSize& contentSize )
 		{
 			point.x += left;
-			contentSize.width -= left + right;//TODO в процентах
+			contentSize.width -= left + right;
 			point.y += top;
 			contentSize.height -= top + bottom;
+		}
+		virtual void reRect ( RECT& rect )
+		{
+			rect.left += left;
+			rect.right -= right;
+			rect.top += top;
+			rect.bottom -= bottom;
 		}
 		/// <summary>
 		/// Применение отступов для расчёта размеров контента
@@ -250,6 +257,11 @@ namespace LibWin {
 		/// <param name="point"></param>
 		/// <param name="contentSize"></param>
 		virtual void reSize ( CSize& size )
+		{
+			size.width -= left + right;
+			size.height -= top + bottom;
+		}
+		virtual void plusSize ( CSize& size )
 		{
 			size.width += left + right;
 			size.height += top + bottom;

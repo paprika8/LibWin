@@ -45,8 +45,12 @@ namespace LibWin {
 		SolidBrush* brush = new SolidBrush ( BGColor );
 		g.FillRectangle ( brush , rcDirty->left , rcDirty->top , ( int ) ( rcDirty->right - rcDirty->left ) , ( int ) ( rcDirty->bottom - rcDirty->top ) );
 
-		rcDirty->top = dynamic_cast < PScrollText* > ( pData )->WPos;
-		Util::drawText ( &g , *rcDirty , ( WCHAR* ) text.c_str () , stringFormat , font , new SolidBrush ( Color(0,0,0) ) );
+		RECT r = RECT ( *rcDirty );
+		r.top = -dynamic_cast < PScrollText* > ( pData )->WPos;
+		pData->getPadding ()->reRect ( r );
+		delete brush;
+		brush = new SolidBrush ( Color ( 0 , 0 , 0 ) );
+		Util::drawText ( &g , r , ( WCHAR* ) text.c_str () , stringFormat , font , brush );
 		delete brush;
 	}
 	LRESULT ScrollText::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
@@ -76,18 +80,27 @@ namespace LibWin {
 			{
 				f->WPos = f->TextHeight;
 			}
-			UpdateWindow ( pData->getHWND () );
+			InvalidateRect ( pData->getHWND (), 0, 0 );
 			return 0;
 		}
+		case WM_SIZE:
 		case WM_SETSCROLLEDTEXT:
 		{
-			CSize buff = f->size;
+			CSize buff = f->getAbsoluteSize();
 			f->getPadding ()->reSize ( buff );
-			RectF rect1 ( 0 , 0 , buff.width , buff.height );
+			RectF rect1 ( 0 , 0 , buff.width , 0 );
 			RectF rect2;
 			Graphics graph = GetDC ( 0 );
 			graph.MeasureString ( text.c_str () , -1 , font , rect1 , stringFormat , &rect2 , 0 , 0 );
-			f->TextHeight = rect2.Height;
+			f->TextHeight = rect2.Height - buff.height;
+			if ( f->WPos > f->TextHeight )
+			{
+				f->WPos = f->TextHeight;
+			}
+			if ( f->WPos < 0 )
+			{
+				f->WPos = 0;
+			}
 			return 0;
 		}
 		default:

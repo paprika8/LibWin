@@ -70,7 +70,7 @@ namespace LibWin {
 			Positioner positioner = Positioner ( pData->that );
 			positioner.Positioning ();
 		}
-		return 0;
+		return pData->that->getModel ()->VProc ( hwnd , uMsg , wParam , lParam , pData->that );
 		case WM_DESTROY:
 		case WM_NCDESTROY:
 			if ( pData && pData->that ) {
