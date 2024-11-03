@@ -19,9 +19,11 @@ namespace LibWin {
 			if ( comp ) {
 				PositioningOne (comp);
 			}
-			PComposite* compos = dynamic_cast < PComposite* >( parent );
-			if ( compos ) {
-				PositioningFew (compos);
+			else{
+				PComposite* compos = dynamic_cast < PComposite* >( parent );
+				if ( compos ) {
+					PositioningFew (compos);
+				}
 			}
 		}
 

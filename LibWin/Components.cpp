@@ -207,10 +207,35 @@ namespace LibWin {
 		remove((ProcessView*)child);
 	}
 
-	void PComponent::setContent(ProcessView* view)
+	void PComponent::add ( ProcessView* process )
 	{
-		content = view;
-		content->parent = this;
+		content = process;
+		if( content )
+			content->parent = this;
+	}
+
+	void PComponent::remove ( ProcessView* )
+	{
+		content = 0;
+	}
+
+	ProcessView* PComponent::get ( int i )
+	{
+		if ( i == 0 )
+			return content;
+		return 0;
+	}
+
+	int PComponent::len ()
+	{
+		if ( content )
+			return 1;
+		return 0;
+	}
+
+	void PComponent::setContent(ProcessView* process)
+	{
+		add ( process );
 	}
 
 	void PComponent::childDeleted(Safety* child)
@@ -218,7 +243,7 @@ namespace LibWin {
 		content = 0;
 	}
 
-	void Component::setContent ( View* view )
+	void Component::add ( View* view )
 	{
 		if ( content ) {
 			content->parent = 0;
@@ -236,6 +261,34 @@ namespace LibWin {
 			Positioner positioner = Positioner ( process );
 			positioner.Positioning ();
 		}
+	}
+
+	void Component::remove ( View* view )
+	{
+		if ( content == view ) {
+			content->parent = 0;
+			delete content;
+		}
+		content = 0;
+	}
+
+	View* Component::get ( int i )
+	{
+		if ( i == 0 ) 
+			return content;
+		return 0;
+	}
+
+	int Component::len ()
+	{
+		if ( content )
+			return 1;
+		return 0;
+	}
+
+	void Component::setContent ( View* view )
+	{
+		add ( view );
 	}
 
 }

@@ -331,17 +331,23 @@ namespace LibWin {
 	/// <summary>
 	/// Pview с одним Pview внутри
 	/// </summary>
-	class __declspec( novtable ) PComponent : public ProcessView
+	class __declspec( novtable ) PComponent : public PComposite
 	{
 	public:
+
+		void add ( ProcessView* ) override;
+		void remove ( ProcessView* ) override;
+		ProcessView* get ( int i ) override;
+		int len () override;
+
 		virtual void setContent ( ProcessView* view );
 		virtual ProcessView* getContent () { return content; }
 	protected:
 		ProcessView* content = 0;
 	public:
 
-		PComponent ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
-		PComponent ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+		PComponent ( View* aModel , HWND hwnd ) : PComposite ( aModel , hwnd ) {}
+		PComponent ( View* aModel , HWND hwnd , const char* _id ) : PComposite ( aModel , hwnd , _id ) {}
 
 		virtual ~PComponent () {
 			if( content ){
@@ -359,10 +365,10 @@ namespace LibWin {
 	class __declspec( novtable ) Composite : virtual public View
 	{
 	public:
-		virtual void add ( View* ) = 0;//TODO прописать
+		virtual void add ( View* ) = 0;
 		virtual void remove ( View* ) = 0;
-		virtual View* get ( int i ) = 0;
-		virtual int len () = 0;
+		virtual View* get ( int i ) { return 0; }
+		virtual int len () { return 0; }
 
 		void childDeleted ( Safety* child ) override
 		{
@@ -380,9 +386,15 @@ namespace LibWin {
 	/// <summary>
 	/// view с одним view внутри
 	/// </summary>
-	class __declspec( novtable ) Component : virtual public View
+	class __declspec( novtable ) Component : public Composite
 	{
 	public:
+
+		void add ( View* ) override;
+		void remove ( View* ) override;
+		View* get ( int i ) override;
+		int len () override;
+
 		virtual void setContent ( View* view );
 		void childDeleted ( Safety* ) override {
 			content = 0;
