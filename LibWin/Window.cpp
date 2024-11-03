@@ -67,10 +67,6 @@ namespace LibWin {
 		}
 		return 0;
 	}
-	void RectWindow::Unregister ()
-	{
-		UnregisterClass ( getSzWindowClass () , NULL );
-	}
 
 	RectPWindow::RectPWindow ( View* aModel ) : ProcessWindow ( aModel , 0 )
 	{
@@ -94,22 +90,6 @@ namespace LibWin {
 		if ( content )
 			content->configure ( win->getHWND () );
 		return win;
-	}
-
-	RectWindow::~RectWindow () //TODO удалить ProcessView
-	{
-		if ( content )
-			delete content;
-	}
-
-	void RectWindow::childDeleted ( Safety* )
-	{
-		content = 0;
-	}
-
-	void RectWindow::PVDeleted ( ProcessView* process) //TODO обнулять ссылки на PV
-	{
-		wnds->rem ( process->getHWND() );
 	}
 
 	void RectWindow::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
@@ -141,30 +121,5 @@ namespace LibWin {
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 	}
 
-	void RectWindow::setContent ( View* view )
-	{
-		if ( content ) {
-			content->parent = 0;
-			delete content;
-		}
-		content = view;
-		if ( !view )
-			return;
-		view->parent = this;
-		ProcessView* child , * process = 0;
-		if ( process = wnds->get ( 0 ) ) {
-			child = content->configure ( process->getHWND () );
-			PComponent* comp = dynamic_cast< PComponent* >( process );
-			comp->setContent (child);
-			Positioner positioner = Positioner ( process );
-			positioner.Positioning ();
-		}
-	}
-
-	void ProcessWindow::setContent ( ProcessView* view )
-	{
-		content = view;
-
-	}
 }
 

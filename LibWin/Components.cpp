@@ -73,7 +73,7 @@ namespace LibWin {
 		return 0;
 		case WM_DESTROY:
 		case WM_NCDESTROY:
-			if ( pData != NULL ) {
+			if ( pData && pData->that ) {
 				SetWindowLongPtr ( hwnd , 0 , 0 );
 				{
 					auto buf = pData->that->getModel ()->eve.has ( uMsg );
@@ -121,6 +121,11 @@ namespace LibWin {
 	void ExitLib ()
 	{
 		GdiplusShutdown ( gdiplusToken );
+	}
+
+	void View::PVDeleted ( ProcessView* process )
+	{
+		wnds->rem ( process->getHWND () );
 	}
 
 	LRESULT View::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
@@ -190,6 +195,47 @@ namespace LibWin {
 	View* &WndsManager::getModel ( ProcessView* process )
 	{
 		return process->model;
+	}
+
+	void ProcessView::childDeleted ( Safety* )
+	{
+
+	}
+
+	void PComposite::childDeleted(Safety* child)
+	{
+		remove((ProcessView*)child);
+	}
+
+	void PComponent::setContent(ProcessView* view)
+	{
+		content = view;
+		content->parent = this;
+	}
+
+	void PComponent::childDeleted(Safety* child)
+	{
+		content = 0;
+	}
+
+	void Component::setContent ( View* view )
+	{
+		if ( content ) {
+			content->parent = 0;
+			delete content;
+		}
+		content = view;
+		if ( !view )
+			return;
+		view->parent = this;
+		ProcessView* child , * process = 0;
+		if ( process = wnds->get ( 0 ) ) {
+			child = content->configure ( process->getHWND () );
+			PComponent* comp = dynamic_cast< PComponent* >( process );
+			comp->setContent ( child );
+			Positioner positioner = Positioner ( process );
+			positioner.Positioning ();
+		}
 	}
 
 }

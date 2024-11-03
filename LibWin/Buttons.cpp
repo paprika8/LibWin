@@ -2,10 +2,6 @@
 #include "Visual.h"
 #include "Positioner.h"
 namespace LibWin {
-	void LibWin::Button::PVDeleted ( ProcessView* process )
-	{
-		wnds->rem ( process->getHWND () );
-	}
 	int Button::Register ()
 	{
 		WNDCLASS wcex;
@@ -59,9 +55,6 @@ namespace LibWin {
 		CData* cData = new CData ();
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
-
-		margin = new CMargin ( 0 , 0 , 0 , 0 );
-		padding = new CPadding ( 0 , 0 , 0 , 0 );
 	}
 
 	ProcessButtonWrap::ProcessButtonWrap ( View* aModel , HWND hwnd , const char* _id = "" ) : PComponent ( aModel , hwnd , _id )
@@ -88,9 +81,6 @@ namespace LibWin {
 		CData* cData = new CData ();
 		cData->that = this;
 		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
-
-		margin = new CMargin ( 0 , 0 , 0 , 0 );
-		padding = new CPadding ( 0 , 0 , 0 , 0 );
 	}
 
 	LibWin::ButtonWithText::ButtonWithText () : Content(), Button(){
@@ -188,11 +178,6 @@ namespace LibWin {
 		wnds = new SingleWnd ();
 	}
 
-	void LibWin::ButtonWrap::childDeleted ( Safety* )
-	{
-		content = 0;
-	}
-
 	ProcessView* LibWin::ButtonWrap::configure ( HWND hwnd , ProcBuilder* builder )
 	{
 		ProcessButtonWrap* process = new ProcessButtonWrap ( this , hwnd );
@@ -207,10 +192,6 @@ namespace LibWin {
 			positioner.Positioning ();
 		}
 		return process;
-	}
-
-	void LibWin::ButtonWrap::Unregister ()
-	{
 	}
 
 	void LibWin::ButtonWrap::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
@@ -281,56 +262,5 @@ namespace LibWin {
 		default:
 			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		}
-	}
-
-	void LibWin::ButtonWrap::setContent ( View* view )
-	{
-		if ( content )
-			delete content;
-		content = view;
-		if ( !view )
-			return;
-		view->parent = this;
-		ProcessView* child , * process = 0;
-		if ( process = wnds->get ( 0 ) ) {
-			child = content->configure ( process->getHWND () );
-			PComponent* comp = dynamic_cast< PComponent* >( process );
-			comp->setContent ( child );
-			Positioner positioner = Positioner ( process );
-			positioner.Positioning ();
-		}
-	}
-
-	CMargin* LibWin::ProcessButton::getMargin ()
-	{
-		return margin;
-	}
-
-	CPadding* LibWin::ProcessButton::getPadding ()
-	{
-		return padding;
-	}
-
-	CSize LibWin::ProcessButton::GetContentSize ()
-	{
-		return size;
-	}
-	CMargin* LibWin::ProcessButtonWrap::getMargin ()
-	{
-		return margin;
-	}
-
-	CPadding* LibWin::ProcessButtonWrap::getPadding ()
-	{
-		return padding;
-	}
-
-	CSize LibWin::ProcessButtonWrap::GetContentSize ()
-	{
-		return size;
-	}
-	void ProcessButtonWrap::setContent ( ProcessView* view )
-	{
-		content = view;
 	}
 }

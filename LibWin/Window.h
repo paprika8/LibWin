@@ -69,8 +69,6 @@ namespace LibWin {
 			_In_opt_ LPVOID lpParam
 		) = 0;
 
-
-		void setContent ( ProcessView* view ) override;
 	};
 
 	/// <summary>
@@ -81,15 +79,6 @@ namespace LibWin {
 	public:
 		RectPWindow ( View* aModel );
 	protected:
-		virtual CMargin* getMargin () override { return 0; };
-		virtual CPadding* getPadding () override
-		{
-			return padding;
-		};
-		virtual CSize GetContentSize () override
-		{
-			return size;
-		};
 
 		virtual int init (
 			_In_ DWORD dwExStyle ,
@@ -118,18 +107,13 @@ namespace LibWin {
 			( ( RectPWindow* ) wnds->get ( 0 ) )->show ( nCmdShow );
 		}
 		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
-		void setContent ( View* view ) override;
 
-		~RectWindow ();
 	protected:
 
 		virtual int Register () override;
-		virtual void Unregister () override;
 
 		virtual const wchar_t* getSzWindowClass () override { return L"WindRect"; }
 
-		void childDeleted ( Safety* ) override;
-		void PVDeleted ( ProcessView* ) override;
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
 		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
 

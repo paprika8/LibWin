@@ -10,9 +10,7 @@ namespace LibWin {
 			wnds = new SingleWnd (); 
 		};
 		Color BGColor = Color(246, 190, 241);
-
-		// Inherited via View
-		void childDeleted ( Safety* ) override;
+		std::function< bool ( HWND , HDC , RECT* , BOOL , ProcessView* )> *paint = 0;
 
 		ProcessView* configure ( HWND hWnd , ProcBuilder* ) override;
 
@@ -20,12 +18,8 @@ namespace LibWin {
 
 		int Register () override;
 
-		void Unregister () override;
-
-		void PVDeleted ( ProcessView* ) override;
-
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
-		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
+		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override; //TODO переброс сообщений родителю
 
 	};
 
@@ -49,17 +43,6 @@ namespace LibWin {
 			margin = new CMargin ( 0 , 0 , 0 , 0 );
 			padding = new CPadding ( 0 , 0 , 0 , 0 );
 		};
-
-
-
-
-		// Inherited via ProcessView
-		CSize GetContentSize () override;
-
-		CMargin* getMargin () override;
-
-		CPadding* getPadding () override;
-
 
 	};
 

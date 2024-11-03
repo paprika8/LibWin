@@ -122,14 +122,16 @@ namespace LibWin {
 	protected:
 
 		virtual int Register () = 0;
-		virtual void Unregister () = 0;
+		virtual void Unregister () {
+		}
 
-		virtual void PVDeleted ( ProcessView* ) = 0;
+		virtual void PVDeleted ( ProcessView* process );
+		
 		virtual void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) = 0;
-		virtual LRESULT CALLBACK VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData );
+		virtual LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData );
 
 		static void VDPaintBuffer ( HWND hwnd , PAINTSTRUCT* pPaintStruct );
-		static LRESULT CALLBACK SVProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam );
+		static LRESULT SVProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam );
 	private:
 
 	};
@@ -138,7 +140,7 @@ namespace LibWin {
 	/// <summary>
 	/// Родительский класс для всех моделей отображения компонентов
 	/// </summary>
-	class __declspec( novtable ) ProcessView
+	class __declspec( novtable ) ProcessView : public Safety
 	{
 		friend WndsManager;
 	public:
@@ -156,7 +158,6 @@ namespace LibWin {
 			point = apoint;
 			MoveWindow (hWnd, point.x, point.y, asize.width, asize.height, 1);
 		}
-		virtual CSize GetContentSize () = 0;
 		View* getModel () { return model; }
 		virtual ~ProcessView ()
 		{
@@ -169,13 +170,25 @@ namespace LibWin {
 				delete padding;
 			if ( hWnd ){
 				SetWindowLongPtr ( hWnd , 0 , 0 );
-				SendMessage(hWnd, WM_DESTROY, 0, 0);
+				SendMessage(hWnd, WM_CLOSE, 0, 0);
 			}
 		}
 		const char* getId () { return id; }
 
-		virtual CMargin* getMargin () = 0;
-		virtual CPadding* getPadding () = 0;
+		virtual CMargin* getMargin ()
+		{
+			return margin;
+		}
+
+		virtual CPadding* getPadding ()
+		{
+			return padding;
+		}
+
+		virtual CSize GetContentSize ()
+		{
+			return size;
+		}
 		CSize getAbsoluteSize () {
 			LPRECT buf = new RECT ();
 			GetClientRect ( hWnd , buf );
@@ -242,8 +255,8 @@ namespace LibWin {
 	protected:
 
 		View* model;
-		CPadding* padding = 0;
-		CMargin* margin = 0;
+		CPadding* padding = new CPadding(0, 0, 0, 0);
+		CMargin* margin = new CMargin ( 0 , 0 , 0 , 0 );
 		HWND hWnd = 0;
 
 
@@ -294,7 +307,9 @@ namespace LibWin {
 #pragma endregion
 	private:
 		const char* id = "";
-	};
+	public:
+		void childDeleted ( Safety* ) override;
+};
 
 	/// <summary>
 	/// Pview с несколькими Pview внутри
@@ -309,6 +324,8 @@ namespace LibWin {
 
 		PComposite ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
 		PComposite ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+
+		void childDeleted ( Safety* ) override;
 	};
 
 	/// <summary>
@@ -317,7 +334,7 @@ namespace LibWin {
 	class __declspec( novtable ) PComponent : public ProcessView
 	{
 	public:
-		virtual void setContent ( ProcessView* view ) = 0;
+		virtual void setContent ( ProcessView* view );
 		virtual ProcessView* getContent () { return content; }
 	protected:
 		ProcessView* content = 0;
@@ -325,18 +342,39 @@ namespace LibWin {
 
 		PComponent ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd ) {}
 		PComponent ( View* aModel , HWND hwnd , const char* _id ) : ProcessView ( aModel , hwnd , _id ) {}
+
+		virtual ~PComponent () {
+			if( content ){
+				content->parent = 0;
+				delete content;
+			}
+		}
+
+		void childDeleted ( Safety* ) override;
 	};
 
 	/// <summary>
 	/// view с несколькими view внутри
 	/// </summary>
-	class __declspec( novtable ) Composite : public View
+	class __declspec( novtable ) Composite : virtual public View
 	{
 	public:
-		virtual void add ( View* ) = 0;
+		virtual void add ( View* ) = 0;//TODO прописать
 		virtual void remove ( View* ) = 0;
 		virtual View* get ( int i ) = 0;
 		virtual int len () = 0;
+
+		void childDeleted ( Safety* child ) override
+		{
+			View* view = dynamic_cast< View* >( child );
+			if( view )
+				remove ( view );
+		}
+
+		~Composite () {
+			for ( int i = 0; i < len (); i++ )
+				delete get ( i );
+		}
 	};
 
 	/// <summary>
@@ -345,13 +383,18 @@ namespace LibWin {
 	class __declspec( novtable ) Component : virtual public View
 	{
 	public:
-		virtual void setContent ( View* view ) = 0;
-		virtual View* getContent () { return content; }
-		~Component () {
-			if ( content ){
-				content->parent = 0;
+		virtual void setContent ( View* view );
+		void childDeleted ( Safety* ) override {
+			content = 0;
+		}
+		void PVDeleted ( ProcessView* process ) override {
+			if( parent )
+				parent->childDeleted ( this ); 
+			wnds->rem ( process->getHWND () );
+		}
+		~Component(){
+			if ( content )
 				delete content;
-			}
 		}
 	protected:
 		View* content;

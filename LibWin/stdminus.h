@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string.h>
+#include <Windows.h>
 
 typedef long long ll;
 typedef unsigned long long ull;
@@ -328,26 +329,34 @@ namespace stdminus {
 	};
 #pragma endregion
 #pragma region map
-	template<typename T2 , typename U>
+	template<typename T2 , typename U, bool initable>
 	struct map : public set<mpair<T2 , U>, true> {
+#if initable
 		std::function<U ()> init;
+#endif
 		map ( std::function<U ()> func ) {
 			map::len = 0;
 			map::m = ( mpair<T2 , U>* )malloc ( 0 );
+#if initable
 			init = func;
+#endif
 		}
 		void remMap ( T2 a ) {
 			if ( !map::len )
 				return;
 			mpair<T2 , U> buf;
 			buf.x = a;
+#if initable
 			buf.y = init ();
+#endif
 			map::rem ( buf );
 		}
 		U& operator []( T2 i ) {
 			mpair<T2 , U> buf;
 			buf.x = i;
+#if initable
 			buf.y = init ();
+#endif
 			mpair<T2 , U>* it = map::binFound ( buf );
 			if ( !map::len || ( it - 1 )->x != i || ( it - 1 ) < map::m ) {
 				it = map::multyAdd ( buf , it );
@@ -357,34 +366,42 @@ namespace stdminus {
 
 			return it->y;
 		}
-		void prnt () {
+		/*void prnt () {
 			for ( int i = 0; i < map::len; i++ ) {
 				printf ( "%d -> %d\n" , ( map::m + i )->x , ( map::m + i )->y );
 			}
 			printf ( "\n" );
-		}
+		}*/
 	};
 
-	template<typename U>
-	struct map<int , U> : public set<mpair<int , U>, true> {
+	template<typename U , bool initable>
+	struct map<int , U, initable> : public set<mpair<int , U>, initable> {
+#if initable
 		std::function<U ()> init;
+#endif
 		map ( std::function<U ()> func ) {
 			map::len = 0;
 			map::m = ( mpair<int , U>* )malloc ( 0 );
+#if initable
 			init = func;
+#endif
 		}
 		void remMap ( int a ) {
 			if ( !map::len )
 				return;
 			mpair<int , U> buf;
 			buf.x = a;
+#if initable
 			buf.y = init ();
+#endif
 			map::rem ( buf );
 		}
 		mpair<int , U>& operator []( int i ) override {
 			mpair<int , U> buf;
 			buf.x = i;
+#if initable
 			buf.y = init ();
+#endif
 			mpair<int , U>* it = map::binFound ( buf );
 			if ( !map::len || ( it - 1 )->x != i || ( it - 1 ) < map::m ) {
 				it = map::multyAdd ( buf , it );
@@ -405,8 +422,8 @@ namespace stdminus {
 
 #pragma region WEvents
 	template<class... Arg>
-	struct WEvents : public map<int , std::function<LRESULT ( Arg... )>*> {
-		WEvents () : map<int , std::function<LRESULT ( Arg... )>*> 
+	struct WEvents : public map<int , std::function<LRESULT ( Arg... )>*, 0> {
+		WEvents () : map<int , std::function<LRESULT ( Arg... )>* , 0>
 			( []()->std::function<LRESULT ( Arg... )>*
 			{ 
 				return 0;

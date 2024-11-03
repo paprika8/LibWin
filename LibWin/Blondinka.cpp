@@ -1,8 +1,5 @@
 #include "Blondinka.h"
 namespace LibWin {
-	void Blondinka::childDeleted ( Safety* )
-	{
-	}
 	ProcessView* Blondinka::configure ( HWND hWnd , ProcBuilder* builder)
 	{
 		PBlond* process = new PBlond ( this , hWnd, 0, 0, CSize(100, 100));
@@ -41,15 +38,13 @@ namespace LibWin {
 		}
 		return 0;
 	}
-	void Blondinka::Unregister ()
-	{
-	}
-	void Blondinka::PVDeleted ( ProcessView* process)
-	{
-		wnds->rem ( process->getHWND () );
-	}
 	void Blondinka::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
+		if ( paint )
+		{
+			( *paint ) ( hwnd , hdc , rcDirty , bErase , pData );
+			return;
+		}
 		Graphics g ( hdc );
 		SolidBrush* brush = new SolidBrush(BGColor);
 		g.FillRectangle ( brush , rcDirty->left ,rcDirty->top ,( int ) ( rcDirty->right - rcDirty->left ) ,( int ) ( rcDirty->bottom - rcDirty->top ));
@@ -64,17 +59,5 @@ namespace LibWin {
 			EndPaint ( hwnd , &paintStruct );
 		}
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
-	}
-	CSize PBlond::GetContentSize ()
-	{
-		return size;
-	}
-	CMargin* PBlond::getMargin ()
-	{
-		return margin;
-	}
-	CPadding* PBlond::getPadding ()
-	{
-		return padding;
 	}
 }

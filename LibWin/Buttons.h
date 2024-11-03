@@ -16,10 +16,6 @@ namespace LibWin {
 		bool isDown = false;
 
 		ProcessButton ( View* , HWND , const char* );
-		// Унаследовано через ProcessView
-		CMargin* getMargin () override;
-		CPadding* getPadding () override;
-		CSize GetContentSize () override;
 	protected:
 
 	};
@@ -28,12 +24,6 @@ namespace LibWin {
 		bool isDown = false;
 
 		ProcessButtonWrap ( View* , HWND , const char* );
-		// Унаследовано через ProcessView
-		CMargin* getMargin () override;
-		CPadding* getPadding () override;
-		CSize GetContentSize () override;
-		// Унаследовано через PComponent
-		void setContent ( ProcessView* view ) override;
 	protected:
 
 	};
@@ -46,7 +36,6 @@ namespace LibWin {
 		std::function<void ()> click = [] ()-> void{};
 
 		// Унаследовано через View
-		void PVDeleted ( ProcessView* ) override;
 		const wchar_t* getSzWindowClass () override;
 		virtual void Click () { click (); }
 
@@ -59,7 +48,7 @@ namespace LibWin {
 	/// </summary>
 	class ButtonWithText : public Content , public Button {
 	public:
-		WCHAR* text = new WCHAR[1]{0};//TODO draw
+		WCHAR* text = new WCHAR[1]{0};
 		StringFormat* stringFormat = new StringFormat();
 		Font *font = createFont(16);
 		Brush* brush = new SolidBrush ( Color ( 255 , 255 , 255 ) );
@@ -78,11 +67,8 @@ namespace LibWin {
 	public:
 		ButtonWrap ();
 
-		void childDeleted ( Safety* ) override;
 		ProcessView* configure ( HWND hwnd , ProcBuilder* ) override;
-		void Unregister () override;
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
 		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
-		void setContent ( View* view ) override;
 	};
 }
