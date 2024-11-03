@@ -52,12 +52,14 @@ namespace LibWin {
 	}
 	LRESULT Blondinka::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
 	{
-		if ( uMsg == WM_PAINT) {
+		if ( uMsg == WM_PAINT ) {
 			PAINTSTRUCT paintStruct;
 			HDC hDC = BeginPaint ( hwnd , &paintStruct );
 			VDPaintBuffer ( hwnd , &paintStruct );
 			EndPaint ( hwnd , &paintStruct );
 		}
+		else if( uMsg != WM_MOUSEMOVE )
+			return SendMessage ((( ProcessView* )pData->parent)->getHWND() , uMsg , wParam , lParam);
 		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 	}
 }

@@ -28,7 +28,7 @@ namespace LibWin {
 	public:
 		PBlond ( View* aModel , HWND hwnd , int startX, int startY, CSize startSize, const char* _id = "" ) : ProcessView ( aModel , hwnd , _id ) {
 
-			hWnd = CreateWindowEx (0 ,model->getSzWindowClass () ,L"" , WS_VISIBLE | WS_CHILD | WS_HSCROLL | WS_VSCROLL , startX , startY , startSize.width , startSize.height ,hwnd ,NULL ,hInstance ,NULL);
+			hWnd = CreateWindowEx (0 ,model->getSzWindowClass () ,L"" , WS_VISIBLE | WS_CHILD , startX , startY , startSize.width , startSize.height ,hwnd ,NULL ,hInstance ,NULL);
 			if ( !hWnd )
 			{
 				MessageBox ( NULL ,

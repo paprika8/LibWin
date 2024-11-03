@@ -230,10 +230,14 @@ namespace LibWin {
 		case WM_MOUSEMOVE:
 		{
 			LPPOINT point = new POINT ();
-			if ( pButton->isDown && GetCursorPos ( point ) && WindowFromPoint ( *point ) == hwnd ) {
+			LPRECT buf = new RECT ();
+			GetWindowRect ( hwnd , buf );
+			if ( pButton->isDown && GetCursorPos ( point ) && PtInRect ( buf , *point) ) {
 				delete point;
+				delete buf;
 				return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 			}
+			delete buf;
 			delete point;
 			pButton->isDown = false;
 			return DefWindowProc ( hwnd , uMsg , wParam , lParam );

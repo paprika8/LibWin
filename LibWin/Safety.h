@@ -8,7 +8,9 @@ namespace LibWin {
 	{
 	public:
 		Safety* parent = 0;
-		virtual void childDeleted ( Safety* ) = 0;
+		virtual void childDeleted ( Safety* ) {
+
+		}
 		/// <summary>
 		/// Сообщает об удалении все связанные объекты
 		/// </summary>
