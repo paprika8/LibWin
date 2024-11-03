@@ -1,11 +1,11 @@
 #pragma once
 #include "Components.h"
 namespace LibWin {
-	class Blondinka : public View
+	class Blondinka : public Content
 	{
 	public:
-
-		Blondinka () :View ()  
+		 
+		Blondinka () : Content ()  
 		{ 
 			wnds = new SingleWnd (); 
 		};
@@ -19,7 +19,7 @@ namespace LibWin {
 		int Register () override;
 
 		void VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData ) override;
-		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override; //TODO переброс сообщений родителю
+		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
 
 	};
 
@@ -40,8 +40,6 @@ namespace LibWin {
 			cData->that = this;
 			SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 			size = startSize;
-			margin = new CMargin ( 0 , 0 , 0 , 0 );
-			padding = new CPadding ( 0 , 0 , 0 , 0 );
 		};
 
 	};

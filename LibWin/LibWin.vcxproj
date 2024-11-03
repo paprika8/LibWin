@@ -144,6 +144,7 @@
     <ClInclude Include="Positioner.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Safety.h" />
+    <ClInclude Include="ScrollText.h" />
     <ClInclude Include="UIStructs.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="LibWin.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Positioner.cpp" />
     <ClCompile Include="ProcBuilders.h" />
+    <ClCompile Include="ScrollText.cpp" />
     <ClCompile Include="stdminus.h" />
     <ClCompile Include="UIStructs.cpp" />
     <ClCompile Include="Visual.cpp" />

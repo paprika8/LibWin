@@ -26,6 +26,7 @@ namespace LibWin {
 	/// Идентификатор приложения
 	/// </summary>
 	HINSTANCE hInstance;
+	const uint WM_SETSCROLLEDTEXT = 0x0401;
 	set<WNDName, false> isRegistry = set<WNDName , false> ();
 	void moveWnd ( ProcessView* process , ProcessView* child );
 

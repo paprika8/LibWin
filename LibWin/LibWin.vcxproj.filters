@@ -45,6 +45,9 @@
     <ClInclude Include="Blondinka.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="ScrollText.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LibWin.rc">
@@ -77,6 +80,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
     <ClCompile Include="Blondinka.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollText.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

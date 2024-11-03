@@ -104,6 +104,7 @@ namespace LibWin {
 	{
 		hInstance = ahInstance;
 		GdiplusStartupInput gdiplusStartupInput;
+		
 
 		Status st = GdiplusStartup ( &gdiplusToken , &gdiplusStartupInput , NULL );
 		if ( st != Ok )
