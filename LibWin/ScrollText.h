@@ -52,9 +52,11 @@ namespace LibWin {
 
 	class PScrollText : public ProcessView
 	{
+		friend ScrollText;
 	public:
 		int WPos = 0;
 		int TextHeight = 0;
+		int MaxTextHeight = 0;
 
 		PScrollText ( View* aModel , HWND hwnd , const char* _id = "" ) : ProcessView ( aModel , hwnd , _id ) {
 
@@ -68,12 +70,37 @@ namespace LibWin {
 			}
 			CData* cData = new CData ();
 			padding->right = 30;
+			padding->left = 5;
 			cData->that = this;
 			SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 
 		};
+	private:
+		int oldY;
+		bool isDown = 0;
 	};
+	
 
+
+	Color operator-( Color start, Color DeltaColor) {
+		Color finish = Color ( start.GetA () , start.GetR () - DeltaColor.GetR () , start.GetG () - DeltaColor.GetG () , start.GetB () - DeltaColor.GetB () );
+		return finish;
+	}
+
+	Color operator+( Color start , Color DeltaColor ) {
+		Color finish = Color ( start.GetA () , start.GetR () + DeltaColor.GetR () , start.GetG () + DeltaColor.GetG () , start.GetB () + DeltaColor.GetB () );
+		return finish;
+	}
+
+	Color operator-( Color start , int Delta ) {
+		Color finish = Color ( start.GetA () , start.GetR () - Delta , start.GetG () - Delta , start.GetB () - Delta );
+		return finish;
+	}
+
+	Color operator+( Color start , int Delta ) {
+		Color finish = Color ( start.GetA () , start.GetR () + Delta , start.GetG () + Delta , start.GetB () + Delta );
+		return finish;
+	}
 
 }
 

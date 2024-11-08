@@ -41,14 +41,30 @@ namespace LibWin {
 	}
 	void ScrollText::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
+		PScrollText* f = dynamic_cast < PScrollText* > ( pData );
 		Graphics g ( hdc );
 		SolidBrush* brush = new SolidBrush ( BGColor );
 		g.FillRectangle ( brush , rcDirty->left , rcDirty->top , ( int ) ( rcDirty->right - rcDirty->left ) , ( int ) ( rcDirty->bottom - rcDirty->top ) );
+		delete brush;
+
+		//подложка для скролл бара
+		brush = new SolidBrush ( BGColor - 18 );
+		Rect ScrollRect = Rect ( rcDirty->right - 20 , rcDirty->top , 20 , rcDirty->bottom - rcDirty->top );
+		g.FillRectangle ( brush , ScrollRect );
+		delete brush;
+
+		//скролл бар
+		brush = new SolidBrush ( BGColor - 38 );
+		CSize AbsSize = pData->getAbsoluteSize ();
+		pData->getPadding ()->reSize ( AbsSize );
+		int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
+		Rect ScrollBar = Rect ( rcDirty->right - 18 , rcDirty->top + ( ( double ) f->WPos ) / f->MaxTextHeight * ( pData->getAbsoluteSize ().height - c ) , 16 , c );
+		g.FillRectangle ( brush , ScrollBar );
+		delete brush;
 
 		RECT r = RECT ( *rcDirty );
-		r.top = -dynamic_cast < PScrollText* > ( pData )->WPos;
+		r.top = -f->WPos;
 		pData->getPadding ()->reRect ( r );
-		delete brush;
 		brush = new SolidBrush ( Color ( 0 , 0 , 0 ) );
 		Util::drawText ( &g , r , ( WCHAR* ) text.c_str () , stringFormat , font , brush );
 		delete brush;
@@ -66,19 +82,59 @@ namespace LibWin {
 			EndPaint ( hwnd , &paintStruct );
 			break;
 		}
+
+		
+		case WM_LBUTTONDOWN:
+		{
+			CSize AbsSize = pData->getAbsoluteSize ();
+			int width = AbsSize.width;
+			pData->getPadding ()->reSize ( AbsSize );
+			int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
+			int a = pData->getAbsoluteSize ().height;
+			int pos = pData->getPadding()->top + ( ( double ) f->WPos ) / f->MaxTextHeight * ( pData->getAbsoluteSize ().height - c );
+			int xPos = LOWORD ( lParam );
+			int yPos = HIWORD ( lParam );
+			if ( pos < yPos && yPos < pos + c && xPos > width-18 && xPos < width-2) {
+				f->isDown = 1;
+				f->oldY = yPos;
+			}
+			
+
+		}
+		case WM_MOUSEMOVE:
+		{
+			if ( f->isDown ) {
+				CSize AbsSize = pData->getAbsoluteSize ();
+				pData->getPadding ()->reSize ( AbsSize );
+				int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
+				int a = pData->getAbsoluteSize ().height;
+				int yPos = HIWORD ( lParam );
+				int deltaPos = yPos - f->oldY;
+				f->WPos += deltaPos / ( a - c ) * f->MaxTextHeight;
+			}
+
+
+		}
+		case WM_LBUTTONUP:
+		{
+			f->isDown = 0;
+		}
+	
+
 		case WM_MOUSEWHEEL:
 		{
 			int WPDelta = GET_WHEEL_DELTA_WPARAM ( wParam );
-			WPDelta /= 30 * Util::kSize;
+			WPDelta /= 15 * Util::kSize;
 
-			f->WPos += WPDelta;
+			f->WPos -= WPDelta;
+			if ( f->WPos > f->MaxTextHeight )
+			{
+				f->WPos = f->MaxTextHeight;
+			}
+			
 			if ( f->WPos < 0 )
 			{
 				f->WPos = 0;
-			}
-			if ( f->WPos > f->TextHeight )
-			{
-				f->WPos = f->TextHeight;
 			}
 			InvalidateRect ( pData->getHWND (), 0, 0 );
 			return 0;
@@ -92,10 +148,11 @@ namespace LibWin {
 			RectF rect2;
 			Graphics graph = GetDC ( 0 );
 			graph.MeasureString ( text.c_str () , -1 , font , rect1 , stringFormat , &rect2 , 0 , 0 );
-			f->TextHeight = rect2.Height - buff.height;
-			if ( f->WPos > f->TextHeight )
+			f->MaxTextHeight = rect2.Height - buff.height;
+			f->TextHeight = rect2.Height;
+			if ( f->WPos > f->MaxTextHeight )
 			{
-				f->WPos = f->TextHeight;
+				f->WPos = f->MaxTextHeight;
 			}
 			if ( f->WPos < 0 )
 			{
