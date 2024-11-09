@@ -226,7 +226,7 @@ namespace LibWin {
 			SetCapture ( hwnd );
 			return DefWindowProc ( hwnd , uMsg , wParam , lParam );
 		}
-		case LBN_KILLFOCUS:
+		case WM_MOUSELEAVE:
 		case WM_MOUSEMOVE:
 		{
 			LPPOINT point = new POINT ();

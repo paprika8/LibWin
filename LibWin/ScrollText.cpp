@@ -47,20 +47,23 @@ namespace LibWin {
 		g.FillRectangle ( brush , rcDirty->left , rcDirty->top , ( int ) ( rcDirty->right - rcDirty->left ) , ( int ) ( rcDirty->bottom - rcDirty->top ) );
 		delete brush;
 
-		//подложка для скролл бара
-		brush = new SolidBrush ( BGColor - 18 );
-		Rect ScrollRect = Rect ( rcDirty->right - 20 , rcDirty->top , 20 , rcDirty->bottom - rcDirty->top );
-		g.FillRectangle ( brush , ScrollRect );
-		delete brush;
 
-		//скролл бар
-		brush = new SolidBrush ( BGColor - 38 );
 		CSize AbsSize = pData->getAbsoluteSize ();
 		pData->getPadding ()->reSize ( AbsSize );
-		int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
-		Rect ScrollBar = Rect ( rcDirty->right - 18 , rcDirty->top + ( ( double ) f->WPos ) / f->MaxTextHeight * ( pData->getAbsoluteSize ().height - c ) , 16 , c );
-		g.FillRectangle ( brush , ScrollBar );
-		delete brush;
+		if ( AbsSize.height < f->TextHeight ) {
+			//подложка для скролл бара
+			brush = new SolidBrush ( BGColor - 18 );
+			Rect ScrollRect = Rect ( rcDirty->right - 20 , rcDirty->top , 20 , rcDirty->bottom - rcDirty->top );
+			g.FillRectangle ( brush , ScrollRect );
+			delete brush;
+
+			//скролл бар
+			brush = new SolidBrush ( BGColor - 38 );
+			int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
+			Rect ScrollBar = Rect ( rcDirty->right - 18 , rcDirty->top + ( ( double ) f->WPos ) / f->MaxTextHeight * ( pData->getAbsoluteSize ().height - c ) , 16 , c );
+			g.FillRectangle ( brush , ScrollBar );
+			delete brush;
+		}
 
 		RECT r = RECT ( *rcDirty );
 		r.top = -f->WPos;
@@ -82,7 +85,7 @@ namespace LibWin {
 			EndPaint ( hwnd , &paintStruct );
 			break;
 		}
-
+		break;
 		
 		case WM_LBUTTONDOWN:
 		{
@@ -101,6 +104,7 @@ namespace LibWin {
 			
 
 		}
+		break;
 		case WM_MOUSEMOVE:
 		{
 			if ( f->isDown ) {
@@ -109,17 +113,31 @@ namespace LibWin {
 				int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
 				int a = pData->getAbsoluteSize ().height;
 				int yPos = HIWORD ( lParam );
+
 				int deltaPos = yPos - f->oldY;
-				f->WPos += deltaPos / ( a - c ) * f->MaxTextHeight;
+				f->WPos += deltaPos * f->MaxTextHeight / ( a - c );
+				if ( f->WPos > f->MaxTextHeight )
+				{
+					f->WPos = f->MaxTextHeight;
+				}
+
+				if ( f->WPos < 0 )
+				{
+					f->WPos = 0;
+				}
+				f->oldY = yPos;
+				InvalidateRect ( pData->getHWND () , 0 , 0 );
 			}
 
 
 		}
+		break;
+		case WM_MOUSELEAVE:
 		case WM_LBUTTONUP:
 		{
 			f->isDown = 0;
 		}
-	
+		break;
 
 		case WM_MOUSEWHEEL:
 		{
