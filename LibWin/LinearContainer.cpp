@@ -16,6 +16,13 @@ namespace LibWin {
 		wnds->add ( PLC );
 		if ( builder )
 			builder->build ( PLC );
+		for ( int i = 0; i < len (); i++ ) {
+			ProcessView* child = get ( i )->configure ( PLC->getHWND () );
+			PComposite* comp = dynamic_cast< PComposite* >( PLC );
+			comp->add ( child );
+		}
+		Positioner positioner = Positioner ( PLC );
+		positioner.Positioning ();
 		return PLC;
 	}
 	const wchar_t* LinearContainer::getSzWindowClass ()
@@ -50,12 +57,22 @@ namespace LibWin {
 	}
 	void LinearContainer::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
+		Graphics g ( hdc );
+		SolidBrush* brush = new SolidBrush ( Color ( 255 , 255 , 255 ) ); //TODO background
+		g.FillRectangle ( brush , //TODO background
+			0 ,
+			0 ,
+			( int ) ( rcDirty->right - rcDirty->left ) ,
+			( int ) ( rcDirty->bottom - rcDirty->top )
+		);
+		delete brush;
 	}
 	void LinearContainer::add ( View* view)
 	{
 		if ( !view ) {
 			return;
 		}
+		view->parent = this;
 		pointerArr.add ( view );
 		ProcessView* child , * process = 0;
 		if ( process = wnds->get ( 0 ) ) {
@@ -71,6 +88,49 @@ namespace LibWin {
 	void LinearContainer::remove ( View* view)
 	{
 		pointerArr.rem ( view );
+	}
+	void LinearContainer::childDeleted ( Safety* child )
+	{
+		View* view = dynamic_cast< View* >( child );
+		if ( view )
+			pointerArr.rem ( view , 0);
+	}
+	LRESULT LinearContainer::VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData )
+	{
+		if ( uMsg == WM_PAINT ) {
+			PAINTSTRUCT paintStruct;
+			HDC hDC = BeginPaint ( hwnd , &paintStruct );
+			VDPaintBuffer ( hwnd , &paintStruct );
+			EndPaint ( hwnd , &paintStruct );
+			if ( pData->parent )
+				return SendMessage ( ( ( ProcessView* ) pData->parent )->getHWND () , uMsg , wParam , lParam );
+		}
+		return DefWindowProc ( hwnd , uMsg , wParam , lParam );
+	}
+	PLContainer::PLContainer ( View* aModel , HWND hwnd , const char* _id ) : PComposite ( aModel , hwnd , _id )
+	{
+		hWnd = CreateWindowEx (
+			0 ,
+			model->getSzWindowClass () ,
+			L"" ,
+			WS_VISIBLE | WS_CHILD ,
+			0 , 0 ,
+			100 , 100 ,
+			hwnd ,
+			NULL ,
+			hInstance ,
+			NULL
+		);
+		if ( !hWnd )
+		{
+			MessageBox ( NULL ,
+				_T ( "Call to CreateWindowEx failed!" ) ,
+				_T ( "Windows Desktop Guided Tour" ) ,
+				NULL );
+		}
+		CData* cData = new CData ();
+		cData->that = this;
+		SetWindowLongPtr ( hWnd , 0 , ( LONG_PTR ) cData );
 	}
 	ProcessView* PLContainer::get ( int i )
 	{
@@ -91,5 +151,9 @@ namespace LibWin {
 	void PLContainer::remove ( ProcessView* pview)
 	{
 		pointerArr.rem ( pview );
+	}
+	void PLContainer::childDeleted ( Safety* child )
+	{
+		pointerArr.rem ( ( ProcessView* )child , false );
 	}
 }

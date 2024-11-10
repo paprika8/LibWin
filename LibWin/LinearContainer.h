@@ -24,9 +24,10 @@ namespace LibWin {
 
 		void remove ( View* ) override;
 
+		void childDeleted ( Safety* child ) override;
+		
 
-
-
+		LRESULT VProc ( HWND hwnd , UINT uMsg , WPARAM wParam , LPARAM lParam , ProcessView* pData ) override;
 
 
 	private:
@@ -37,9 +38,7 @@ namespace LibWin {
 	{
 	public:
 		arr <ProcessView* , 1> pointerArr;
-		PLContainer (View* aModel, HWND hwnd, const char* _id = "") : PComposite (aModel, hwnd,_id) {
-			
-		}
+		PLContainer ( View* aModel , HWND hwnd , const char* _id = "" );
 		virtual ProcessView* get ( int i ) override;
 
 		virtual int len () override;
@@ -47,6 +46,8 @@ namespace LibWin {
 		void add ( ProcessView* ) override;
 
 		void remove ( ProcessView* ) override;
+
+		void childDeleted ( Safety* child ) override;
 
 
 

@@ -183,17 +183,24 @@ namespace stdminus {
 			}
 		}
 		void rem ( T* h ) {
+			rem ( h , 1 );
+		}
+		void rem ( T* h, bool deleted) {
 			if ( ( arr::m + arr::len - h - 1 ) > 0 )
 				memmove ( h , h + 1 , ( arr::m + arr::len - h - 1 ) * sizeof ( T ) );
 			if ( arr::len > 0 ) {
-				arr::Delete ( h );
+				if( deleted )
+					arr::Delete ( h );
 				arr::m = ( T* ) realloc ( arr::m , --arr::len * sizeof ( T ) );
 			}
 		}
 		void rem ( T h ) {
+			rem ( h , 1 );
+		}
+		void rem ( T h , bool deleted ) {
 			for ( int i = 0; i < arr::len; i++ )
 				if ( h == arr::m[i] ) {
-					rem ( arr::m + i );
+					rem ( arr::m + i, deleted );
 					break;
 				}
 		}

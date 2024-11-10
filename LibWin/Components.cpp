@@ -71,8 +71,13 @@ namespace LibWin {
 			positioner.Positioning ();
 		}
 		return pData->that->getModel ()->VProc ( hwnd , uMsg , wParam , lParam , pData->that );
-		case WM_DESTROY:
 		case WM_NCDESTROY:
+		{
+			HWND parentHWND = GetParent ( hwnd );
+			if ( parentHWND )
+				InvalidateRect ( parentHWND , 0 , 0 );
+		}
+		case WM_DESTROY:
 			if ( pData && pData->that ) {
 				SetWindowLongPtr ( hwnd , 0 , 0 );
 				{
