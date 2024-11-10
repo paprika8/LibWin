@@ -105,11 +105,7 @@ namespace stdminus {
 				return m[len + i];
 			return m[i];
 		}
-		virtual const T*& operator []( int i ) const {
-			if ( i < 0 )
-				return m[len + i];
-			return m[i];
-		}
+
 		void clear () {
 			m = ( T** ) malloc ( 0 );
 			len = 0;
@@ -190,7 +186,7 @@ namespace stdminus {
 			if ( ( arr::m + arr::len - h - 1 ) > 0 )
 				memmove ( h , h + 1 , ( arr::m + arr::len - h - 1 ) * sizeof ( T ) );
 			if ( arr::len > 0 ) {
-				Delete ( h );
+				arr::Delete ( h );
 				arr::m = ( T* ) realloc ( arr::m , --arr::len * sizeof ( T ) );
 			}
 		}
