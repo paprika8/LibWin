@@ -99,6 +99,7 @@ namespace LibWin {
 			int yPos = HIWORD ( lParam );
 			if ( pos < yPos && yPos < pos + c && xPos > width-18 && xPos < width-2) {
 				f->isDown = 1;
+				SetCapture ( pData->getHWND () );
 				f->oldY = yPos;
 			}
 			
@@ -112,7 +113,7 @@ namespace LibWin {
 				pData->getPadding ()->reSize ( AbsSize );
 				int c = max ( pData->getAbsoluteSize ().height * AbsSize.height / f->TextHeight , 20 );
 				int a = pData->getAbsoluteSize ().height;
-				int yPos = HIWORD ( lParam );
+				short yPos = HIWORD ( lParam );
 
 				int deltaPos = yPos - f->oldY;
 				f->WPos += deltaPos * f->MaxTextHeight / ( a - c );
@@ -135,6 +136,8 @@ namespace LibWin {
 		case WM_MOUSELEAVE:
 		case WM_LBUTTONUP:
 		{
+			if( f->isDown )
+				ReleaseCapture ();
 			f->isDown = 0;
 		}
 		break;
