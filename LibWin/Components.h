@@ -58,9 +58,9 @@ namespace LibWin {
 	class __declspec( novtable ) WndsManager
 	{
 	public:
-		virtual void add ( ProcessView* ) = 0;
-		virtual void rem ( HWND ) = 0;
-		virtual ProcessView* get ( int ) { return 0; };
+		virtual void add ( ProcessView* process ) = 0;
+		virtual void rem ( HWND hwnd ) = 0;
+		virtual ProcessView* get ( int i ) { return 0; };
 		virtual int len () { return 0; };
 		virtual bool isEmpty () = 0;
 		virtual ~WndsManager () {};
@@ -74,9 +74,9 @@ namespace LibWin {
 		SingleWnd () {
 			single = 0;
 		}
-		virtual void add ( ProcessView* ) override;
-		virtual void rem ( HWND ) override;
-		virtual ProcessView* get ( int ) override;
+		virtual void add ( ProcessView* process ) override;
+		virtual void rem ( HWND hwnd ) override;
+		virtual ProcessView* get ( int i ) override;
 		virtual int len () override;
 		virtual bool isEmpty () override;
 		virtual ~SingleWnd ();
@@ -105,7 +105,7 @@ namespace LibWin {
 		friend ProcessView;
 	public:
 		stdminus::WEvents<HWND , UINT , WPARAM , LPARAM> eve;
-		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* ) = 0;
+		virtual ProcessView* configure ( HWND hWnd , ProcBuilder* builder ) = 0;
 		ProcessView* configure ( HWND hWnd ) {
 			return this->configure ( hWnd , defaultBuild );
 		}
@@ -309,7 +309,7 @@ namespace LibWin {
 	private:
 		const char* id = "";
 	public:
-		void childDeleted ( Safety* ) override;
+		void childDeleted ( Safety* child ) override;
 };
 
 	/// <summary>
@@ -318,8 +318,8 @@ namespace LibWin {
 	class __declspec( novtable ) PComposite : public ProcessView
 	{
 	public:
-		virtual void add ( ProcessView* ) = 0;
-		virtual void remove ( ProcessView* ) = 0;
+		virtual void add ( ProcessView* process ) = 0;
+		virtual void remove ( ProcessView* process ) = 0;
 		virtual ProcessView* get ( int i ) = 0;
 		virtual int len () = 0;
 
@@ -336,8 +336,8 @@ namespace LibWin {
 	{
 	public:
 
-		void add ( ProcessView* ) override;
-		void remove ( ProcessView* ) override;
+		void add ( ProcessView* process ) override;
+		void remove ( ProcessView* process ) override;
 		ProcessView* get ( int i ) override;
 		int len () override;
 
@@ -357,7 +357,7 @@ namespace LibWin {
 			}
 		}
 
-		void childDeleted ( Safety* ) override;
+		void childDeleted ( Safety* child ) override;
 	};
 
 	/// <summary>
@@ -366,8 +366,8 @@ namespace LibWin {
 	class __declspec( novtable ) Composite : virtual public View
 	{
 	public:
-		virtual void add ( View* ) = 0;
-		virtual void remove ( View* ) = 0;
+		virtual void add ( View* view ) = 0;
+		virtual void remove ( View* view ) = 0;
 		virtual View* get ( int i ) { return 0; }
 		virtual int len () { return 0; }
 
@@ -391,8 +391,8 @@ namespace LibWin {
 	{
 	public:
 
-		void add ( View* ) override;
-		void remove ( View* ) override;
+		void add ( View* view ) override;
+		void remove ( View* view ) override;
 		View* get ( int i ) override;
 		int len () override;
 
@@ -418,7 +418,7 @@ namespace LibWin {
 	/// </summary>
 	class __declspec( novtable ) Content : virtual public View
 	{
-		void childDeleted ( Safety* ) override
+		void childDeleted ( Safety* child ) override
 		{
 
 		}
