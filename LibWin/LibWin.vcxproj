@@ -160,6 +160,7 @@
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="LinearContainer.cpp" />
     <ClCompile Include="Positioner.cpp" />
+    <ClCompile Include="ProcBuilders.cpp" />
     <ClCompile Include="ProcBuilders.h" />
     <ClCompile Include="ScrollText.cpp" />
     <ClCompile Include="stdminus.h" />

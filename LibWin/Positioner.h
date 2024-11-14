@@ -49,29 +49,50 @@ namespace LibWin {
 		void PositioningFew(PComposite* compos) 
 		{
 			CPadding* padding = parent->getPadding ();
-			CPoint cord = ( 0 , 0 );
+			CPoint cursor = ( 0 , 0 );
 			CSize size = compos->getAbsoluteSize ();
-			padding->reRect ( cord , size );
+			padding->reRect ( cursor , size );
 
-			CSize contSize = parent->GetContentSize ();
+			CSize contSize = parent->GetContentSize ( size );
 			CMargin tempMargin = CMargin ( 0, 0, 0, 0 );
-			CPoint start = ( parent->point );
+			CPoint start = ( 0 , 0 );
 			CSize buffer = CSize ( size );
-			tempMargin.reRect (start, buffer, contSize, compos->marginType);
+			tempMargin.reRect ( start , buffer , contSize , compos->marginType );
 			MarginType MBuffer = compos->marginType;
 
-			if ( start.x < cord.x ) {
-				MBuffer = (MarginType)( MBuffer ^ MarginType::HCENTER | MarginType::LEFT);
+			CSize contentSize = size;
+
+			if ( start.x < cursor.x ) {
+				MBuffer = ( MarginType ) ( MBuffer ^ MarginType::HCENTER | MarginType::LEFT );
 			}
-			if ( start.y < cord.y ) {
+			if ( start.y < cursor.y ) {
 				MBuffer = ( MarginType ) ( MBuffer ^ MarginType::VCENTER | MarginType::TOP );
 			}
+			cursor.y = start.y;
+			cursor.x = start.x;
 			for ( int cont = 0; cont < compos->len (); cont++ ) {
-				compos->get ( cont )->getMargin ()->toAbsolut ( size );
-				compos->get ( cont )->size.toAbsolut ( size );
-				MarginType marginType = MBuffer & ~MarginType::PARENT | compos->get(cont)->marginType;
-				compos->get ( cont )->getMargin ()->reRect ( cord , size, compos->get ( cont )->size, marginType);
-				compos->get ( cont )->Move ( cord , compos->get ( cont )->size );
+				CMargin amargin = compos->get ( cont )->getMargin ()->toAbsolut ( size );
+				CSize asize = compos->get ( cont )->size.toAbsolut ( size );
+				CPoint cord = cursor;
+				MarginType marginType = MBuffer & ~MarginType::PARENT | (compos->get(cont)->marginType & MarginType::PARENT);
+				//amargin.reRect ( cord , contentSize , asize , marginType);
+				cord.x += amargin.left;
+				cord.y += amargin.top;
+				compos->get ( cont )->Move ( cord , asize );
+				if( compos->orientation )
+				{
+					if ( marginType & MarginType::LEFT )
+						contentSize = contentSize.minusBottom ( asize , amargin );
+					cursor.y += asize.height + amargin.top + amargin.bottom;
+				}
+				else
+				{
+					if ( marginType & MarginType::TOP )
+						contentSize = contentSize.minusRight ( asize , amargin );
+					cursor.x += asize.width + amargin.left + amargin.right;
+					
+				}
+				contentSize = size;
 			}
 		}
 	};

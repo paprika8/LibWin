@@ -206,11 +206,13 @@ namespace LibWin {
 			return CSize ( (short)width + b.width , ( short ) max ( height , b.height ) );
 		}
 		CSize plusRight ( CSize b , CMargin m );
+		CSize minusRight ( CSize b , CMargin m );
 		CSize plusBottom ( CSize b )
 		{
 			return CSize ( ( short ) max ( width , b.width ) , ( short ) height + b.height );
 		}
 		CSize plusBottom ( CSize b , CMargin margin );
+		CSize minusBottom ( CSize b , CMargin margin );
 		int toInt ()
 		{
 			return *( ( int* ) this );

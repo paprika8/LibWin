@@ -58,7 +58,7 @@ namespace LibWin {
 	void LinearContainer::VPaint ( HWND hwnd , HDC hdc , RECT* rcDirty , BOOL bErase , ProcessView* pData )
 	{
 		Graphics g ( hdc );
-		SolidBrush* brush = new SolidBrush ( Color ( 255 , 255 , 255 ) ); //TODO background
+		SolidBrush* brush = new SolidBrush ( Color ( 205 , 255 , 255 ) ); //TODO background
 		g.FillRectangle ( brush , //TODO background
 			0 ,
 			0 ,
@@ -144,7 +144,7 @@ namespace LibWin {
 	{
 		if ( !pview ) {
 			return;
-		}
+		} 
 		pointerArr.add ( pview );
 		pview->parent = this;
 	}
@@ -155,5 +155,7 @@ namespace LibWin {
 	void PLContainer::childDeleted ( Safety* child )
 	{
 		pointerArr.rem ( ( ProcessView* )child , false );
+		Positioner positioner (this);
+		positioner.Positioning ();
 	}
 }

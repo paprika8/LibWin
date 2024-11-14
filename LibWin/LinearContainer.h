@@ -37,7 +37,9 @@ namespace LibWin {
 	class PLContainer : public PComposite
 	{
 	public:
+		
 		arr <ProcessView* , 1> pointerArr;
+
 		PLContainer ( View* aModel , HWND hwnd , const char* _id = "" );
 		virtual ProcessView* get ( int i ) override;
 
@@ -49,10 +51,21 @@ namespace LibWin {
 
 		void childDeleted ( Safety* child ) override;
 
-
-
-
-
+		CSize GetContentSize (CSize size) override
+		{
+			CSize res;
+			CSize asize;
+			CMargin amargin ( 0 , 0 , 0 , 0 );
+			for ( int i = 0; i < len (); i++ ) {
+				asize = get ( i )->size.toAbsolut ( size );
+				amargin = get ( i )->getMargin ()->toAbsolut ( size );
+				if ( !orientation )
+					res = res.plusRight ( asize, amargin );
+				else
+					res = res.plusBottom ( asize , amargin );
+			}
+			return res;
+		}
 
 	private:
 

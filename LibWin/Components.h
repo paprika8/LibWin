@@ -145,6 +145,7 @@ namespace LibWin {
 	{
 		friend WndsManager;
 	public:
+
 		ProcessView ( View* aModel , HWND hwnd ) : ProcessView ( aModel , hwnd , "" ) {}
 		ProcessView ( View* aModel , HWND hwnd , const char* _id )
 		{
@@ -186,7 +187,7 @@ namespace LibWin {
 			return padding;
 		}
 
-		virtual CSize GetContentSize ()
+		virtual CSize GetContentSize (CSize size)
 		{
 			return size;
 		}
@@ -318,6 +319,14 @@ namespace LibWin {
 	class __declspec( novtable ) PComposite : public ProcessView
 	{
 	public:
+
+		enum {
+			Horizontally ,
+			Vertically
+		};
+
+		uint orientation : 1 = Horizontally;
+
 		virtual void add ( ProcessView* process ) = 0;
 		virtual void remove ( ProcessView* process ) = 0;
 		virtual ProcessView* get ( int i ) = 0;

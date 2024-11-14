@@ -9,17 +9,27 @@ namespace LibWin {
 	public:
 		MarginType marginType;
 		CSize size;
-		CMargin *margin = 0;
-		CPadding *padding = 0;
-		SizeProcBuilder ( CSize, MarginType);
+		CMargin* margin = 0;
+		CPadding* padding = 0;
+		SizeProcBuilder ( CSize , MarginType );
 
 		void build ( ProcessView* ) override;
 
-		~SizeProcBuilder ( ) {
+		~SizeProcBuilder () {
 			if ( margin )
 				delete margin;
 			if ( padding )
 				delete padding;
 		}
+	};
+
+
+	class LambdaProcBuilder : public ProcBuilder
+	{
+	public:
+		std::function<void( ProcessView* )> lambdaBuild;
+		LambdaProcBuilder ( std::function<void ( ProcessView* )> abuild );
+
+		void build ( ProcessView* ) override;
 	};
 }
