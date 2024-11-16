@@ -60,8 +60,8 @@ namespace LibWin {
 		Graphics g ( hdc );
 		SolidBrush* brush = new SolidBrush ( Color ( 205 , 255 , 255 ) ); //TODO background
 		g.FillRectangle ( brush , //TODO background
-			0 ,
-			0 ,
+			rcDirty->left ,
+			rcDirty->top ,
 			( int ) ( rcDirty->right - rcDirty->left ) ,
 			( int ) ( rcDirty->bottom - rcDirty->top )
 		);
